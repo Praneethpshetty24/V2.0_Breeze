@@ -1,68 +1,115 @@
-'use client'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from 'react-icons/fa';
 
-import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+export default function Home() {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
 
-export function Home() {
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   return (
-    <div className="bg-[#0C0C0C] p-4 sm:p-6">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+    <div className="min-h-screen bg-[#121212] text-white p-8">
+      {/* Most Liked Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="mb-12"
       >
-        <Card className="bg-[#1C1C1C] border-[#2C2C2C] text-white">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">HDFC Bank</CardTitle>
-            <div className="text-2xl font-bold text-purple-500">7.25% <span className="text-sm text-gray-400">p.a.</span></div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between text-gray-400">
-              <span>Min Amount</span>
-              <span>₹25,000</span>
-            </div>
-            <div className="flex justify-between text-gray-400 mt-2">
-              <span>Tenure</span>
-              <span>2-3 years</span>
-            </div>
-          </CardContent>
-        </Card>
+        <h2 className="text-2xl font-bold mb-6 text-green-400">Most Liked</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            variants={itemVariants}
+            className="bg-[#1E1E1E] p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/50 transition-all"
+          >
+            <FaHeart className="text-green-400 text-2xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Top Performer #1</h3>
+            <p className="text-gray-400">High engagement metrics</p>
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            className="bg-[#1E1E1E] p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/50 transition-all"
+          >
+            <FaStar className="text-green-400 text-2xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Top Performer #2</h3>
+            <p className="text-gray-400">Rising star</p>
+          </motion.div>
+        </div>
+      </motion.div>
 
-        <Card className="bg-[#1C1C1C] border-[#2C2C2C] text-white">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">ICICI Bank</CardTitle>
-            <div className="text-2xl font-bold text-purple-500">7.10% <span className="text-sm text-gray-400">p.a.</span></div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between text-gray-400">
-              <span>Min Amount</span>
-              <span>₹10,000</span>
-            </div>
-            <div className="flex justify-between text-gray-400 mt-2">
-              <span>Tenure</span>
-              <span>1-2 years</span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Most Bought Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="mb-12"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-green-400">Most Bought</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <motion.div
+            variants={itemVariants}
+            className="bg-[#1E1E1E] p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/50 transition-all"
+          >
+            <FaShoppingCart className="text-green-400 text-2xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Popular Stock #1</h3>
+            <p className="text-gray-400">High trading volume</p>
+          </motion.div>
+          <motion.div
+            variants={itemVariants}
+            className="bg-[#1E1E1E] p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/50 transition-all"
+          >
+            <FaChartLine className="text-green-400 text-2xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Popular Stock #2</h3>
+            <p className="text-gray-400">Trending upward</p>
+          </motion.div>
+        </div>
+      </motion.div>
 
-        <Card className="bg-[#1C1C1C] border-[#2C2C2C] text-white">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">SBI</CardTitle>
-            <div className="text-2xl font-bold text-purple-500">6.90% <span className="text-sm text-gray-400">p.a.</span></div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between text-gray-400">
-              <span>Min Amount</span>
-              <span>₹5,000</span>
-            </div>
-            <div className="flex justify-between text-gray-400 mt-2">
-              <span>Tenure</span>
-              <span>3-5 years</span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Start Funding Here Section */}
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="mt-16"
+      >
+        <h2 className="text-4xl font-bold mb-8 text-center text-green-400">
+      
+          Start Funding Here
+        
+        </h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((item) => (
+            <a href="/stock" key={item}>
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="aspect-square bg-[#1E1E1E] rounded-lg flex items-center justify-center border border-purple-500/20 hover:border-purple-500/50 transition-all cursor-pointer"
+              >
+                <div className="text-center">
+                  <FaChartLine className="text-green-400 text-3xl mb-2 mx-auto" />
+                  <span className="text-sm text-gray-400">Stock {item}</span>
+                </div>
+              </motion.div>
+            </a>
+          ))}
+        </div>
       </motion.div>
     </div>
-  )
+  );
 }
-

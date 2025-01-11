@@ -2,14 +2,15 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wind, HomeIcon, Trophy, LayoutGrid, Users2, UserCircle } from 'lucide-react'
+import { Wind, HomeIcon, Trophy, LayoutGrid, Users2, UserCircle, MessageCircle } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { Home } from './components1/home'
+import Home from './components1/home'
 import { Portfolio } from './components1/portfolio'
 import { Achievements } from './components1/achievements'
 import { Profile } from './components1/profile'
 import { Chat } from './components1/chat'
+import { AiChat } from '@/app/home/components1/aichat'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home')
@@ -18,7 +19,8 @@ export default function App() {
     { id: 'home', label: 'Home', icon: HomeIcon },
     { id: 'portfolio', label: 'Portfolio', icon: LayoutGrid },
     { id: 'achievements', label: 'Achievements', icon: Trophy },
-    { id: 'profile', label: 'Profile', icon: UserCircle }
+    { id: 'profile', label: 'Profile', icon: UserCircle },
+    { id: 'aiChat', label: 'AI Chat', icon: MessageCircle }, // New Tab
   ]
 
   return (
@@ -52,7 +54,7 @@ export default function App() {
       </nav>
 
       {/* Tabs */}
-      <div className="bg-[#1C1C1C] rounded-3xl mt-4 mx-4 overflow-hidden">
+      <div className="bg-[#1C1C1C] rounded-3xl mt-4 mx-4 overflow-hidden sticky top-0 z-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-8">
             {tabs.map((tab) => {
@@ -86,6 +88,7 @@ export default function App() {
         {activeTab === 'portfolio' && <Portfolio />}
         {activeTab === 'achievements' && <Achievements />}
         {activeTab === 'profile' && <Profile />}
+        {activeTab === 'aiChat' && <AiChat />} {/* New Content */}
       </main>
     </div>
   )

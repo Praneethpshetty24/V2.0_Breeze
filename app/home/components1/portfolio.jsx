@@ -1,59 +1,78 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { TrendingUpIcon, TrendingDownIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-const data = [
-  { name: 'Jan', value: 400 },
-  { name: 'Feb', value: 300 },
-  { name: 'Mar', value: 600 },
-  { name: 'Apr', value: 800 },
-  { name: 'May', value: 500 }
+const stocks = [
+  { name: 'Stock A', value: '₹12,000', trend: 'up' },
+  { name: 'Stock B', value: '₹8,500', trend: 'down' },
+  { name: 'Stock C', value: '₹15,200', trend: 'up' },
 ]
 
 export function Portfolio() {
+  const router = useRouter()
+
   return (
-    <div className="bg-[#0C0C0C] p-4 sm:p-6">
-      <motion.div 
+    <div className="bg-[#0C0C0C] p-6">
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        className="space-y-6"
       >
-        <Card className="bg-[#1C1C1C] border-[#2C2C2C] text-white col-span-2">
-          <CardHeader>
-            <CardTitle>Portfolio Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[200px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data}>
-                  <XAxis dataKey="name" stroke="#666" />
-                  <YAxis stroke="#666" />
-                  <Line type="monotone" dataKey="value" stroke="#9333EA" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Main Cards */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="bg-[#1C1C1C] border-[#2C2C2C]">
+            <CardContent className="pt-6">
+              <h2 className="text-lg font-medium text-white mb-2">Total Assets</h2>
+              <p className="text-4xl font-bold text-purple-500">₹1,45,000</p>
+            </CardContent>
+          </Card>
 
-        <Card className="bg-[#1C1C1C] border-[#2C2C2C] text-white">
-          <CardHeader>
-            <CardTitle>Total Assets</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-500">₹1,45,000</div>
-          </CardContent>
-        </Card>
+          <Card className="bg-[#1C1C1C] border-[#2C2C2C]">
+            <CardContent className="pt-6">
+              <h2 className="text-lg font-medium text-white mb-2">Returns</h2>
+              <p className="text-4xl font-bold text-green-500">+12.5%</p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className="bg-[#1C1C1C] border-[#2C2C2C] text-white">
-          <CardHeader>
-            <CardTitle>Returns</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-500">+12.5%</div>
-          </CardContent>
-        </Card>
+        {/* Stock Cards */}
+        <div className="grid gap-4 md:grid-cols-3">
+          {stocks.map((stock) => (
+            <Card
+              key={stock.name}
+              className="bg-[#1C1C1C] border-[#2C2C2C] cursor-pointer transition-transform hover:scale-[1.02]"
+              onClick={() => router.push(`/stock?name=${encodeURIComponent(stock.name)}`)}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-white font-medium">{stock.name}</h3>
+                  {stock.trend === 'up' ? (
+                    <TrendingUpIcon className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <TrendingDownIcon className="w-4 h-4 text-red-500" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-semibold text-white">{stock.value}</p>
+                  <Button
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push(`/sell?name=${encodeURIComponent(stock.name)}`)
+                    }}
+                  >
+                    Sell
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </motion.div>
     </div>
   )
