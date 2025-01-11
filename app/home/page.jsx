@@ -1,0 +1,91 @@
+'use client'
+
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Wind, HomeIcon, Trophy, LayoutGrid, Users2, UserCircle } from 'lucide-react'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
+import { Home } from './components1/home'
+import { Portfolio } from './components1/portfolio'
+import { Achievements } from './components1/achievements'
+import { Profile } from './components1/profile'
+import { Chat } from './components1/chat'
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('home')
+  
+  const tabs = [
+    { id: 'home', label: 'Home', icon: HomeIcon },
+    { id: 'portfolio', label: 'Portfolio', icon: LayoutGrid },
+    { id: 'achievements', label: 'Achievements', icon: Trophy },
+    { id: 'profile', label: 'Profile', icon: UserCircle }
+  ]
+
+  return (
+    <div className="min-h-screen bg-[#0C0C0C]">
+      {/* Navigation */}
+      <nav className="border-b border-[#2C2C2C] bg-[#1C1C1C]">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Wind className="h-6 w-6 text-purple-500" />
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-500 to-purple-600 text-transparent bg-clip-text">
+              Breeze
+            </span>
+          </div>
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" className="text-white">
+                <Users2 className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent 
+              side="right" 
+              className="p-0 bg-[#0C0C0C] text-white border-[#2C2C2C] w-[95%] sm:w-[450px] md:w-[550px] lg:w-[600px] h-screen"
+            >
+              <Chat />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
+
+      {/* Tabs */}
+      <div className="bg-[#1C1C1C] rounded-3xl mt-4 mx-4 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap justify-center sm:justify-start space-x-2 sm:space-x-8">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 py-4 px-3 relative ${
+                    activeTab === tab.id ? 'text-purple-500' : 'text-gray-400'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  {activeTab === tab.id && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500"
+                    />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <main className="container mx-auto px-4 mt-6">
+        {activeTab === 'home' && <Home />}
+        {activeTab === 'portfolio' && <Portfolio />}
+        {activeTab === 'achievements' && <Achievements />}
+        {activeTab === 'profile' && <Profile />}
+      </main>
+    </div>
+  )
+}
+
