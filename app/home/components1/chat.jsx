@@ -85,8 +85,8 @@ export function Chat() {
   )
 
   return (
-    <div className="flex flex-col h-screen bg-[#0C0C0C]">
-      <div className="bg-[#1C1C1C] px-4 py-3.5 flex items-center justify-between border-b border-[#2C2C2C] sticky top-0 z-10">
+    <div className="flex flex-col flex-1 bg-[#0C0C0C] relative">
+      <div className="bg-[#1C1C1C] px-4 py-3.5 flex items-center justify-between border-b border-[#2C2C2C] z-10">
         <div className="flex items-center gap-3">
           <Wind className="h-6 w-6 text-purple-500" />
           <SheetTitle className="text-xl font-bold bg-gradient-to-r from-purple-500 to-purple-600 text-transparent bg-clip-text">
@@ -98,7 +98,7 @@ export function Chat() {
         </SheetClose>
       </div>
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4 pb-4 mr-4">
+        <div className="space-y-4 pb-4">
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
@@ -147,7 +147,7 @@ export function Chat() {
         </div>
       </ScrollArea>
       
-      <div className="border-t border-[#2C2C2C] p-4 bg-[#1C1C1C] sticky bottom-0">
+      <div className="mt-auto border-t border-[#2C2C2C] p-4 bg-[#1C1C1C]">
         {replyTo && (
           <div className="mb-2 bg-[#2C2C2C] p-2 rounded-lg flex justify-between items-start">
             <div>

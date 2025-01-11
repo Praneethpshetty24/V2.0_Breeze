@@ -13,7 +13,7 @@ import { Chat } from './components1/chat'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home')
-  
+
   const tabs = [
     { id: 'home', label: 'Home', icon: HomeIcon },
     { id: 'portfolio', label: 'Portfolio', icon: LayoutGrid },
@@ -22,7 +22,7 @@ export default function App() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0C0C0C]">
+    <div className="min-h-screen flex flex-col bg-[#0C0C0C]">
       {/* Navigation */}
       <nav className="border-b border-[#2C2C2C] bg-[#1C1C1C]">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -41,9 +41,11 @@ export default function App() {
             </SheetTrigger>
             <SheetContent 
               side="right" 
-              className="p-0 bg-[#0C0C0C] text-white border-[#2C2C2C] w-[95%] sm:w-[450px] md:w-[550px] lg:w-[600px] h-screen"
+              className="p-0 bg-[#0C0C0C] text-white border-[#2C2C2C] w-[95%] sm:w-[450px] md:w-[550px] lg:w-[600px] flex flex-col h-full"
             >
-              <Chat />
+              <div className="flex flex-col h-full">
+                <Chat />
+              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -79,7 +81,7 @@ export default function App() {
       </div>
 
       {/* Content */}
-      <main className="container mx-auto px-4 mt-6">
+      <main className="container mx-auto px-4 mt-6 flex-grow">
         {activeTab === 'home' && <Home />}
         {activeTab === 'portfolio' && <Portfolio />}
         {activeTab === 'achievements' && <Achievements />}
@@ -88,4 +90,3 @@ export default function App() {
     </div>
   )
 }
-
