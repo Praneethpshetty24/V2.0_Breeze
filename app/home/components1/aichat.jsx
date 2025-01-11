@@ -42,7 +42,7 @@ export function AiChat() {
       <div
         ref={chatContainerRef}
         className="flex-grow p-4 overflow-y-auto"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Hide scrollbar for Firefox & IE
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', maxHeight: 'calc(100vh - 60px)' }} // Adjust height to account for input field
       >
         {messages.map((message, index) => (
           <div
@@ -65,7 +65,7 @@ export function AiChat() {
       </div>
 
       {/* Fixed Input Box */}
-      <div className="border-t border-[#2C2C2C] bg-[#1C1C1C] p-2">
+      <div className="border-t border-[#2C2C2C] bg-[#1C1C1C] p-2 fixed bottom-0 left-0 right-0">
         <div className="flex items-center container mx-auto px-4">
           <input
             type="text"

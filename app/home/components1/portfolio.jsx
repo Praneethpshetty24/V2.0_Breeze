@@ -26,25 +26,40 @@ export function Portfolio() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="bg-[#1C1C1C] border-[#2C2C2C]">
             <CardContent className="pt-6">
-              <h2 className="text-lg font-medium text-white mb-2">Total Assets</h2>
+              <h2 className="text-lg font-medium text-purple-500 mb-2">Your Assets</h2>
               <p className="text-4xl font-bold text-purple-500">₹1,45,000</p>
             </CardContent>
           </Card>
 
           <Card className="bg-[#1C1C1C] border-[#2C2C2C]">
             <CardContent className="pt-6">
-              <h2 className="text-lg font-medium text-white mb-2">Returns</h2>
-              <p className="text-4xl font-bold text-green-500">+12.5%</p>
+              <h2 className="text-lg font-medium text-green-500 mb-2">Target Set</h2>
+              <p className="text-4xl font-bold text-green-500">₹30,000</p>
             </CardContent>
           </Card>
         </div>
 
+        {/* Target Volume Card */}
+        <Card className="bg-[#1C1C1C] border-[#2C2C2C] mb-6">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-medium text-green-500 mb-2">Target Volume</h2>
+            <div className="flex items-center justify-between">
+              <p className="text-lg font-semibold text-white">₹30,000</p>
+              <p className="text-lg font-semibold text-green-500">75% to Target</p>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '75%' }}></div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Stock Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-1">
+          <h2 className="text-lg font-medium text-green-500 mb-4">Your Funded Stock</h2>
           {stocks.map((stock) => (
             <Card
               key={stock.name}
-              className="bg-[#1C1C1C] border-[#2C2C2C] cursor-pointer transition-transform hover:scale-[1.02]"
+              className="bg-[#1C1C1C] border-[#2C2C2C] cursor-pointer transition-transform hover:scale-[1.02] shadow-lg"
               onClick={() => router.push(`/stock?name=${encodeURIComponent(stock.name)}`)}
             >
               <CardContent className="p-4">
@@ -57,7 +72,7 @@ export function Portfolio() {
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-lg font-semibold text-white">{stock.value}</p>
+                  <p className="text-lg font-semibold text-green-500">{stock.value}</p>
                   <Button
                     size="sm"
                     className="bg-purple-600 hover:bg-purple-700"

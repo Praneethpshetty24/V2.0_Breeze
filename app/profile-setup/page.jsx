@@ -17,8 +17,8 @@ import {
   FiTarget
 } from 'react-icons/fi'
 import { Loading } from '@/components/ui/loading'
-import { db } from '@/firebase'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db, auth } from '@/firebase'
+import { collection, addDoc, serverTimestamp, doc, setDoc, query, where, getDocs } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 export default function PANCardVerification() {
@@ -31,18 +31,44 @@ export default function PANCardVerification() {
     setIsSubmitting(true)
     
     try {
-      // Add document to 'data' collection
-      await addDoc(collection(db, 'data'), {
+      const user = auth.currentUser
+      if (!user) {
+        console.error('User is not authenticated')
+        return
+      }
+
+      // Validate PAN number format (basic validation)
+      if (panNumber.length !== 10) {
+        alert('PAN number must be 10 characters long')
+        setIsSubmitting(false)
+        return
+      }
+
+      // Check if PAN already exists for any user
+      const panQuery = query(collection(db, 'data'), where('panNumber', '==', panNumber))
+      const panQuerySnapshot = await getDocs(panQuery)
+      
+      if (!panQuerySnapshot.empty) {
+        alert('This PAN number is already registered')
+        setIsSubmitting(false)
+        return
+      }
+
+      // Store in 'data' collection
+      const docRef = doc(db, 'data', user.uid)
+      await setDoc(docRef, {
         panNumber: panNumber,
         timestamp: serverTimestamp(),
         verified: true
-      })
+      }, { merge: true })
       
       console.log('PAN Card verified and stored successfully')
-      setPanNumber('') // Clear the input after successful submission
-      router.push('/home') // Redirect to /home after submission
+      setPanNumber('')
+      router.push('/home')
+      
     } catch (error) {
       console.error('Error verifying PAN Card:', error)
+      alert('Error verifying PAN Card. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

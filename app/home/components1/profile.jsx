@@ -5,15 +5,34 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Edit, Settings, User } from 'lucide-react'
-import { auth } from '@/firebase'
+import { auth, db } from '@/firebase'
 import { useEffect, useState } from 'react'
+import { doc, getDoc } from 'firebase/firestore'
 
 export function Profile() {
   const [user, setUser] = useState(null);
+  const [panNumber, setPanNumber] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setUser(user);
+      if (user) {
+        try {
+          const docRef = doc(db, 'data', user.uid);
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setPanNumber(data.panNumber);
+          } else {
+            console.log("No PAN data found for user");
+            setPanNumber('Not verified');
+          }
+        } catch (error) {
+          console.error("Error fetching PAN data:", error);
+          setPanNumber('Error loading');
+        }
+      }
     });
 
     return () => unsubscribe();
@@ -40,6 +59,12 @@ export function Profile() {
                 <p className="text-gray-400">{user?.email || 'john.doe@example.com'}</p>
                 <p className="text-gray-400 mt-2">
                   Member since: {user ? new Date(user.metadata.creationTime).toLocaleDateString() : 'January 2023'}
+                </p>
+                <p className="text-gray-400 mt-2">
+                  PAN Number: {panNumber ? 
+                    <span className="text-green-400">{panNumber}</span> : 
+                    <span className="text-yellow-400">Not verified</span>
+                  }
                 </p>
               </div>
             </div>
