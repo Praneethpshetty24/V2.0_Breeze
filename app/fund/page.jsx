@@ -1,16 +1,49 @@
-"use client"
+'use client'
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Minus, ArrowRight, TrendingUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import BackgroundIcons  from '@/components/BackgroundIcons';
+import BackgroundIcons from '@/components/BackgroundIcons';
 
 const BuyPage = () => {
   const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const pricePerUnit = 182.63;
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+
+  const handleBuyNowClick = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          quantity,
+          unitPrice: pricePerUnit * 100 // Convert to cents for Stripe
+        })
+      });
+      const data = await response.json();
+      
+      if (response.ok && data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Payment session creation failed');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center p-4 relative overflow-hidden">
@@ -35,7 +68,7 @@ const BuyPage = () => {
                   <h2 className="text-2xl font-bold">AAPL</h2>
                 </div>
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-3xl font-bold">$182.63</span>
+                  <span className="text-3xl font-bold">₹{pricePerUnit.toFixed(2)}</span>
                   <motion.span 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -45,7 +78,6 @@ const BuyPage = () => {
                   </motion.span>
                 </div>
               </div>
-              
               <div className="px-3 py-1 bg-[#2A2A2A]/50 rounded-full">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -93,7 +125,7 @@ const BuyPage = () => {
                   animate={{ scale: 1 }}
                   className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]"
                 >
-                  ${(182.63 * quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ₹{(pricePerUnit * quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </motion.div>
               </div>
             </div>
@@ -104,11 +136,17 @@ const BuyPage = () => {
             >
               <Button 
                 className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] text-white py-6 text-lg font-medium rounded-xl shadow-lg shadow-[#8B5CF6]/20"
+                onClick={handleBuyNowClick}
+                disabled={loading}
               >
-                Buy Now
+                {loading ? 'Processing...' : 'Buy Now'}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </motion.div>
+
+            {error && (
+              <p className="mt-2 text-red-500 text-sm">{error}</p>
+            )}
           </div>
         </Card>
       </motion.div>
@@ -117,4 +155,3 @@ const BuyPage = () => {
 };
 
 export default BuyPage;
-
