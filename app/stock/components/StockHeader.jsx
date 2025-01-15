@@ -41,13 +41,14 @@ function ErrorHeader() {
 function StockHeaderContent() {
   const searchParams = useSearchParams()
   const stockName = searchParams.get("name") || "Unknown Stock"
+  const subStock = searchParams.get("sub_stock") || ""
 
-  // Mock data - replace with actual API call in production
+  // Use URL parameters for stock data
   const stockData = {
     name: stockName,
-    price: 178.72,
-    change: 2.35,
-    companyName: "Dynamic Company Name"
+    price: 178.72, // This would come from real-time data
+    change: 2.35, // This would come from real-time data
+    companyName: subStock || "Dynamic Company Name"
   }
 
   const formatPrice = (price) => {

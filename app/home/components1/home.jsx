@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
@@ -22,7 +24,6 @@ const itemVariants = {
   },
 };
 
-// Static data for Most Liked and Most Bought sections
 const staticStocks = [
   { id: 1, name: "Iasa", type: "mostLiked", icon: FaHeart, description: "High engagement metrics" },
   { id: 2, name: "Ale", type: "mostLiked", icon: FaStar, description: "Rising star" },
@@ -102,7 +103,7 @@ function Home() {
               whileTap={{ scale: 0.95 }}
             >
               <SpotlightCard spotlightColor="rgba(0, 229, 255, 0.2)">
-                <a href={`/stock?name=${stock.Stock}`}>
+                <a href={`/stock?name=${stock.Stock}&sub_stock=${stock.Sub_stock}&pe=${stock.PE}&marketCap=${stock.Market_cap}&high52w=${stock["52W_high"]}&low52w=${stock["52W_low"]}`}>
                   <div className="text-center">
                     <FaChartLine className="text-green-400 text-3xl mb-2 mx-auto" />
                     <span className="text-sm text-gray-400">{stock.Stock}</span>
@@ -118,3 +119,4 @@ function Home() {
 }
 
 export default Home;
+

@@ -32,7 +32,7 @@ export default function ProfitLoss() {
             <ArrowDownIcon className="w-6 h-6 mr-2" />
           )}
           <span className="text-3xl font-bold">
-            ${Math.abs(currentProfitLoss).toLocaleString()}
+          ₹{Math.abs(currentProfitLoss).toLocaleString()}
           </span>
         </div>
       </div>
@@ -52,7 +52,7 @@ export default function ProfitLoss() {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value/1000}k`}
+              tickFormatter={(value) => `₹${value/1000}k`}
             />
             <Tooltip
               contentStyle={{ backgroundColor: '#1C1C1C', border: 'none' }}

@@ -63,14 +63,14 @@ export default function AnimatedStockChart() {
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `$${value}`}
+            tickFormatter={(value) => `₹${value}`}
             domain={['dataMin - 10', 'dataMax + 10']}
           />
           <Tooltip
             contentStyle={{ backgroundColor: '#1C1C1C', border: 'none' }}
             labelStyle={{ color: '#fff' }}
             itemStyle={{ color: '#22C55E' }}
-            formatter={(value) => [`$${value.toFixed(2)}`, 'Price']}
+            formatter={(value) => [`₹${value.toFixed(2)}`, 'Price']}
             labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           />
           <Line 
