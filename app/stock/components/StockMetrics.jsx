@@ -1,12 +1,13 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+import PropTypes from 'prop-types'
 
-export default function StockMetrics() {
+function MetricsContent() {
   const searchParams = useSearchParams()
   
-  // Get values from URL parameters
   const pe = searchParams.get('pe') || '0'
   const marketCap = searchParams.get('marketCap') || '0'
   const high52w = searchParams.get('high52w') || '0'
@@ -34,6 +35,28 @@ export default function StockMetrics() {
         </motion.div>
       ))}
     </div>
+  )
+}
+
+// Loading fallback
+function LoadingMetrics() {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="bg-[#1C1C1C] p-4 rounded-lg animate-pulse">
+          <div className="h-4 bg-gray-700 rounded w-20 mb-2" />
+          <div className="h-6 bg-gray-700 rounded w-24" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function StockMetrics() {
+  return (
+    <Suspense fallback={<LoadingMetrics />}>
+      <MetricsContent />
+    </Suspense>
   )
 }
 

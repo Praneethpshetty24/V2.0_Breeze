@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Heart, Bookmark } from 'lucide-react'
 import { ErrorBoundary } from "react-error-boundary"
+import PropTypes from 'prop-types'
 
-// Loading component
 function LoadingHeader() {
   return (
     <div className="p-6 bg-[#1C1C1C] rounded-lg animate-pulse">
@@ -28,33 +28,40 @@ function LoadingHeader() {
   )
 }
 
-// Error component
-function ErrorHeader() {
+function ErrorHeader({ error }) {
   return (
     <div className="p-6 bg-[#1C1C1C] rounded-lg">
-      <div className="text-red-400">Failed to load stock data. Please try again later.</div>
+      <div className="text-red-400">
+        {error?.message || 'Failed to load stock data. Please try again later.'}
+      </div>
     </div>
   )
 }
 
-// Main header content
+ErrorHeader.propTypes = {
+  error: PropTypes.shape({
+    message: PropTypes.string
+  })
+}
+
 function StockHeaderContent() {
   const searchParams = useSearchParams()
   const stockName = searchParams.get("name") || "Unknown Stock"
   const subStock = searchParams.get("sub_stock") || ""
 
-  // Use URL parameters for stock data
   const stockData = {
     name: stockName,
-    price: 178.72, // This would come from real-time data
-    change: 2.35, // This would come from real-time data
+    price: 178.72,
+    change: 2.35,
     companyName: subStock || "Dynamic Company Name"
   }
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     }).format(price)
   }
 
@@ -62,7 +69,7 @@ function StockHeaderContent() {
     const isPositive = change >= 0
     return (
       <span className={`ml-2 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-        {isPositive ? '+' : ''}{change}%
+        {isPositive ? '+' : ''}{change.toFixed(2)}%
       </span>
     )
   }
@@ -104,7 +111,6 @@ function StockHeaderContent() {
   )
 }
 
-// Main component with error boundary and suspense
 export default function StockHeader() {
   return (
     <ErrorBoundary FallbackComponent={ErrorHeader}>
