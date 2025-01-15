@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
 import SpotlightCard from "@/components/ui/SpotlightCard";
-import { Loading } from "@/components/ui/loading";
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -68,7 +68,7 @@ function Home() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#121212] text-white p-8">
-        <Loading />
+        Loading....
       </div>
     );
   }

@@ -20,8 +20,18 @@ export default function FundButton() {
       <motion.div
         key={price}
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.5, ease: "easeOut" }
+        }}
         className="text-2xl font-bold mb-4"
+        style={{
+          color: "white",
+          background: "linear-gradient(90deg, #9333EA, #7C2DC7, #9333EA)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
       >
         Current Price: ₹{price.toFixed(2)}
       </motion.div>
@@ -42,4 +52,3 @@ export default function FundButton() {
     </div>
   )
 }
-
