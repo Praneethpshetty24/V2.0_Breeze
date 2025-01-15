@@ -1,19 +1,23 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { Heart, Bookmark } from 'lucide-react'
+import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { Heart, Bookmark } from "lucide-react";
 
 export default function StockHeader() {
+  const searchParams = useSearchParams();
+  const stockName = searchParams.get("name") || "Unknown Stock"; // Fallback if no name provided
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className="p-6 bg-[#1C1C1C] rounded-lg"
     >
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold text-white">AAPL</h1>
-          <p className="text-gray-400">Apple Inc.</p>
+          <h1 className="text-4xl font-bold text-white">{stockName}</h1>
+          <p className="text-gray-400">Dynamic Company Name</p>
           <div className="flex items-center mt-2">
             <span className="text-3xl font-semibold text-white">$178.72</span>
             <span className="ml-2 text-green-500">+2.35%</span>
@@ -29,6 +33,5 @@ export default function StockHeader() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
-

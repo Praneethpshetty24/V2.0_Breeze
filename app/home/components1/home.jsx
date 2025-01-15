@@ -1,110 +1,120 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
 import SpotlightCard from "@/components/ui/SpotlightCard";
+import { Loading } from "@/components/ui/loading";
 
-export default function Home() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
     },
-  };
+  },
+};
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-    },
-  };
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+  },
+};
+
+// Static data for Most Liked and Most Bought sections
+const staticStocks = [
+  { id: 1, name: "Iasa", type: "mostLiked", icon: FaHeart, description: "High engagement metrics" },
+  { id: 2, name: "Ale", type: "mostLiked", icon: FaStar, description: "Rising star" },
+  { id: 3, name: "zion", type: "mostBought", icon: FaShoppingCart, description: "High trading volume" },
+  { id: 4, name: "Msft", type: "mostBought", icon: FaChartLine, description: "Trending upward" },
+];
+
+const renderStaticStockCards = (type) => {
+  return staticStocks
+    .filter((stock) => stock.type === type)
+    .map((stock) => (
+      <motion.div key={stock.id} variants={itemVariants}>
+        <SpotlightCard spotlightColor={type === "mostBought" ? "rgba(255, 99, 71, 0.2)" : "rgba(0, 229, 255, 0.2)"}>
+          <stock.icon className="text-green-400 text-2xl mb-4" />
+          <h3 className="text-xl font-semibold mb-2">{stock.name}</h3>
+          {stock.description && <p className="text-gray-400">{stock.description}</p>}
+        </SpotlightCard>
+      </motion.div>
+    ));
+};
+
+function Home() {
+  const [stocks, setStocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const response = await fetch("/api/getStocks");
+        const { data } = await response.json();
+        setStocks(data || []);
+      } catch (error) {
+        console.error("Error fetching stocks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStocks();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#121212] text-white p-8">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#121212] text-white p-8">
       {/* Most Liked Section */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="mb-12"
-      >
+      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
         <h2 className="text-2xl font-bold mb-6 text-green-400">Most Liked</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <motion.div variants={itemVariants}>
-            <SpotlightCard spotlightColor="rgba(0, 229, 255, 0.2)">
-              <FaHeart className="text-green-400 text-2xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Top Performer #1</h3>
-              <p className="text-gray-400">High engagement metrics</p>
-            </SpotlightCard>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <SpotlightCard spotlightColor="rgba(0, 229, 255, 0.2)">
-              <FaStar className="text-green-400 text-2xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Top Performer #2</h3>
-              <p className="text-gray-400">Rising star</p>
-            </SpotlightCard>
-          </motion.div>
+          {renderStaticStockCards("mostLiked")}
         </div>
       </motion.div>
 
       {/* Most Bought Section */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="mb-12"
-      >
+      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
         <h2 className="text-2xl font-bold mb-6 text-green-400">Most Bought</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <motion.div variants={itemVariants}>
-            <SpotlightCard spotlightColor="rgba(255, 99, 71, 0.2)">
-              <FaShoppingCart className="text-green-400 text-2xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Popular Stock #1</h3>
-              <p className="text-gray-400">High trading volume</p>
-            </SpotlightCard>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <SpotlightCard spotlightColor="rgba(255, 99, 71, 0.2)">
-              <FaChartLine className="text-green-400 text-2xl mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Popular Stock #2</h3>
-              <p className="text-gray-400">Trending upward</p>
-            </SpotlightCard>
-          </motion.div>
+          {renderStaticStockCards("mostBought")}
         </div>
       </motion.div>
 
       {/* Start Funding Here Section */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="mt-16"
-      >
-        <h2 className="text-4xl font-bold mb-8 text-center text-green-400">
-          Start Funding Here
-        </h2>
+      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mt-16">
+        <h2 className="text-4xl font-bold mb-8 text-center text-green-400">Start Funding Here</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((item) => (
-            <a href="/stock" key={item}>
-              <motion.div
-                variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <SpotlightCard spotlightColor="rgba(0, 229, 255, 0.2)">
+          {stocks.map((stock) => (
+            <motion.div
+              key={stock.id}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <SpotlightCard spotlightColor="rgba(0, 229, 255, 0.2)">
+                <a href={`/stock?name=${stock.Stock}`}>
                   <div className="text-center">
                     <FaChartLine className="text-green-400 text-3xl mb-2 mx-auto" />
-                    <span className="text-sm text-gray-400">Stock {item}</span>
+                    <span className="text-sm text-gray-400">{stock.Stock}</span>
                   </div>
-                </SpotlightCard>
-              </motion.div>
-            </a>
+                </a>
+              </SpotlightCard>
+            </motion.div>
           ))}
         </div>
       </motion.div>
     </div>
   );
 }
+
+export default Home;
