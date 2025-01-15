@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Line, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
+import { usePriceGenerator } from './PriceGenerator'
 
 const initialData = [
   { date: '2023-01-01', price: 170 },
@@ -21,25 +22,24 @@ const initialData = [
 
 export default function AnimatedStockChart() {
   const [data, setData] = useState(initialData)
+  const currentPrice = usePriceGenerator()
 
   useEffect(() => {
     const interval = setInterval(() => {
       setData(currentData => {
         const newData = [...currentData]
         newData.shift() // Remove the first element
-        const lastPrice = newData[newData.length - 1].price
-        const newPrice = lastPrice + (Math.random() - 0.5) * 5 // Random price change
         const newDate = new Date(new Date(newData[newData.length - 1].date).getTime() + 24 * 60 * 60 * 1000) // Next day
         newData.push({
           date: newDate.toISOString().split('T')[0],
-          price: parseFloat(newPrice.toFixed(2))
+          price: currentPrice
         })
         return newData
       })
     }, 2000) // Update every 2 seconds
 
     return () => clearInterval(interval)
-  }, [])
+  }, [currentPrice])
 
   return (
     <motion.div

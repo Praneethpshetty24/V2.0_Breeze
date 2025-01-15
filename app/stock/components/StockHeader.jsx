@@ -1,11 +1,12 @@
 'use client'
 
-import { Suspense } from "react"
+import React, { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Heart, Bookmark } from 'lucide-react'
 import { ErrorBoundary } from "react-error-boundary"
 import PropTypes from 'prop-types'
+import { usePriceGenerator } from './PriceGenerator'
 
 function LoadingHeader() {
   return (
@@ -49,17 +50,19 @@ function StockHeaderContent() {
   const stockName = searchParams.get("name") || "Unknown Stock"
   const subStock = searchParams.get("sub_stock") || ""
 
+  const price = usePriceGenerator()
+
   const stockData = {
     name: stockName,
-    price: 178.72,
-    change: 2.35,
+    price: price,
+    change: ((price - 175) / 175) * 100,
     companyName: subStock || "Dynamic Company Name"
   }
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(price)
