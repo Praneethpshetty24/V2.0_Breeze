@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
 import SpotlightCard from "@/components/ui/SpotlightCard";
+import Mostlikeddb from "./features1/Mostlikeddb";
 
 
 const containerVariants = {
@@ -25,8 +26,6 @@ const itemVariants = {
 };
 
 const staticStocks = [
-  { id: 1, name: "Iasa", type: "mostLiked", icon: FaHeart, description: "High engagement metrics" },
-  { id: 2, name: "Ale", type: "mostLiked", icon: FaStar, description: "Rising star" },
   { id: 3, name: "zion", type: "mostBought", icon: FaShoppingCart, description: "High trading volume" },
   { id: 4, name: "Msft", type: "mostBought", icon: FaChartLine, description: "Trending upward" },
 ];
@@ -83,12 +82,8 @@ function Home() {
   return (
     <div className="min-h-screen bg-[#121212] text-white p-8">
       {/* Most Liked Section */}
-      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 text-green-400">Most Liked</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {renderStaticStockCards("mostLiked")}
-        </div>
-      </motion.div>
+      <Mostlikeddb />
+      
 
       {/* Most Bought Section */}
       <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
