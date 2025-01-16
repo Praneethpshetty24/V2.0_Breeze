@@ -7,6 +7,8 @@ import { Heart, Bookmark } from 'lucide-react';
 import { ErrorBoundary } from "react-error-boundary";
 import PropTypes from "prop-types";
 import { usePriceGenerator } from "./PriceGenerator";
+import MostLiked from './features/MostLiked';
+import MostBought from './features/MostBought';
 
 function LoadingHeader() {
   return (
@@ -92,18 +94,8 @@ function StockContent() {
           </div>
         </div>
         <div className="flex gap-4">
-          <button
-            className="text-gray-400 hover:text-[#9333EA] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:ring-offset-2 focus:ring-offset-[#1C1C1C] rounded-full p-1"
-            aria-label="Like stock"
-          >
-            <Heart className="w-6 h-6" />
-          </button>
-          <button
-            className="text-gray-400 hover:text-[#9333EA] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:ring-offset-2 focus:ring-offset-[#1C1C1C] rounded-full p-1"
-            aria-label="Bookmark stock"
-          >
-            <Bookmark className="w-6 h-6" />
-          </button>
+          <MostLiked />
+          <MostBought />
         </div>
       </div>
     </motion.div>
