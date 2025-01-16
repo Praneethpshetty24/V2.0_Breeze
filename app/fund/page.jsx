@@ -10,8 +10,8 @@ import { useSearchParams } from 'next/navigation';
 
 const BuyPageContent = () => {
   const searchParams = useSearchParams();
-  const passedPrice = parseFloat(searchParams.get('price')) || 182.63; // Default price if not passed
-  const stockName = searchParams.get('name') || "Unknown Stock";  // Retrieve stock name dynamically
+  const passedPrice = parseFloat(searchParams.get('price')) || 182.63;
+  const stockName = searchParams.get('name') || "Unknown Stock";
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,6 +23,7 @@ const BuyPageContent = () => {
     try {
       setLoading(true);
       setError(null);
+      
       const response = await fetch('/api/payment', {
         method: 'POST',
         headers: {
@@ -30,19 +31,25 @@ const BuyPageContent = () => {
         },
         body: JSON.stringify({
           quantity,
-          unitPrice: passedPrice * 100, // Convert to cents for Stripe
+          unitPrice: Math.round(passedPrice * 100), // Convert to cents and ensure it's rounded
+          stockName: stockName,
         }),
       });
+
       const data = await response.json();
 
-      if (response.ok && data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
+      if (!response.ok) {
         throw new Error(data.error || 'Payment session creation failed');
       }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (err) {
-      setError(err.message);
+      console.error('Payment error:', err);
+      setError(err.message || 'Failed to create checkout session');
     } finally {
       setLoading(false);
     }
@@ -54,10 +61,7 @@ const BuyPageContent = () => {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{
-          duration: 0.6,
-          ease: 'easeOut',
-        }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
         className="w-full max-w-md relative z-10"
       >
         <Card className="bg-gradient-to-br from-[#1E1E1E] to-[#252525] border-0 p-8 rounded-2xl shadow-2xl">
@@ -68,7 +72,7 @@ const BuyPageContent = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-[#8B5CF6]" />
-                  <h2 className="text-2xl font-bold">{stockName}</h2> {/* Display dynamic stock name */}
+                  <h2 className="text-2xl font-bold">{stockName}</h2>
                 </div>
                 <div className="flex items-baseline space-x-2">
                   <span className="text-3xl font-bold">
@@ -131,7 +135,7 @@ const BuyPageContent = () => {
                   className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]"
                 >
                   ₹
-                  {(passedPrice * quantity).toLocaleString('en-US', {
+                  {(passedPrice * quantity).toLocaleString('en-IN', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -153,7 +157,11 @@ const BuyPageContent = () => {
               </Button>
             </motion.div>
 
-            {error && <p className="mt-2 text-red-500 text-sm">{error}</p>}
+            {error && (
+              <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-red-500 text-sm">{error}</p>
+              </div>
+            )}
           </div>
         </Card>
       </motion.div>
@@ -168,3 +176,4 @@ const BuyPage = () => (
 );
 
 export default BuyPage;
+

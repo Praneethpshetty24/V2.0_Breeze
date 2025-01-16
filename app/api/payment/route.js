@@ -1,19 +1,18 @@
-import Stripe from 'stripe'
-import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
+import Stripe from 'stripe';
+import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request) {
   try {
-    const headersList = headers()
-    const host = headersList.get('host')
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-    const baseUrl = process.env.NEXT_PUBLIC_URL || `${protocol}://${host}`
+    const headersList = headers();
+    const host = headersList.get('host');
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const baseUrl = process.env.NEXT_PUBLIC_URL || `${protocol}://${host}`;
 
-    const { quantity, unitPrice } = await request.json()
+    const { quantity, unitPrice, stockName } = await request.json();
 
-    console.log('Attempting to create Stripe session...')
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -21,9 +20,9 @@ export async function POST(request) {
           price_data: {
             currency: 'inr',
             product_data: {
-              name: 'AAPL Stock',
+              name: stockName || 'Stock Purchase',
             },
-            unit_amount: unitPrice,
+            unit_amount: Math.round(unitPrice), // Ensure amount is rounded
           },
           quantity: quantity,
         },
@@ -31,15 +30,14 @@ export async function POST(request) {
       mode: 'payment',
       success_url: `${baseUrl}/success`,
       cancel_url: `${baseUrl}/cancel`,
-    })
-    console.log('Stripe session created successfully:', session.id)
-    return NextResponse.json({ url: session.url })
+    });
+
+    return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Detailed error in /api/payment:', error)
+    console.error('Error in payment route:', error);
     return NextResponse.json(
       { error: 'Error creating checkout session', details: error.message },
       { status: 500 }
-    )
+    );
   }
 }
-
