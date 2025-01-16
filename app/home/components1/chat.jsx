@@ -85,19 +85,14 @@ export function Chat() {
   )
 
   return (
-    <div className="flex flex-col flex-1 bg-[#0C0C0C] relative">
-      <div className="bg-[#1C1C1C] px-4 py-3.5 flex items-center justify-between border-b border-[#2C2C2C] z-10">
-        <div className="flex items-center gap-3">
-          <Wind className="h-6 w-6 text-purple-500" />
-          <SheetTitle className="text-xl font-bold bg-gradient-to-r from-purple-500 to-purple-600 text-transparent bg-clip-text">
-            Breeze Chat
-          </SheetTitle>
-        </div>
-        <SheetClose className="rounded-xl opacity-70 hover:opacity-100 p-2 hover:bg-[#2C2C2C] transition-colors">
-          <X className="h-5 w-5 text-white" />
-        </SheetClose>
+    <div className="flex flex-col h-full">
+      <SheetTitle className="sr-only">Chat Dialog</SheetTitle>
+      
+      <div className="p-4 border-b border-[#2C2C2C]">
+        <h2 className="text-xl font-semibold">Breeze Chat</h2>
       </div>
-      <ScrollArea className="flex-1 p-4">
+      
+      <div className="flex-1 overflow-y-auto p-4 pb-20">
         <div className="space-y-4 pb-4">
           {messages.map((msg) => (
             <motion.div
@@ -145,44 +140,19 @@ export function Chat() {
             </motion.div>
           ))}
         </div>
-      </ScrollArea>
-      
-      <div className="mt-auto border-t border-[#2C2C2C] p-4 bg-[#1C1C1C]">
-        {replyTo && (
-          <div className="mb-2 bg-[#2C2C2C] p-2 rounded-lg flex justify-between items-start">
-            <div>
-              <div className="text-sm text-purple-500">
-                Replying to {replyTo.sender}
-              </div>
-              <div className="text-gray-400 text-sm truncate">
-                {replyTo.message}
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={cancelReply}
-              className="text-gray-400 hover:text-red-500"
-            >
-              <XCircle className="h-5 w-5" />
-            </Button>
-          </div>
-        )}
-        <form onSubmit={handleSendMessage} className="flex gap-2">
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+      </div>
+
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#0C0C0C] border-t border-[#2C2C2C]">
+        <div className="flex gap-2">
+          <input
+            type="text"
             placeholder="Type your message..."
-            className="flex-1 bg-[#2C2C2C] border-[#3C3C3C] text-white placeholder:text-gray-400 h-10 rounded-xl px-4"
+            className="flex-1 bg-[#1C1C1C] rounded-lg px-4 py-2 text-white"
           />
-          <Button 
-            type="submit" 
-            size="icon" 
-            className="bg-purple-500 hover:bg-purple-600 h-10 w-10 rounded-xl flex-shrink-0"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+          <button className="p-2 bg-purple-500 rounded-lg">
+            <Send className="h-5 w-5" />
+          </button>
+        </div>
       </div>
     </div>
   )
