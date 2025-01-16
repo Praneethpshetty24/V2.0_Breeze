@@ -3,7 +3,7 @@
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Heart, Bookmark } from "lucide-react";
+import { Heart, Bookmark } from 'lucide-react';
 import { ErrorBoundary } from "react-error-boundary";
 import PropTypes from "prop-types";
 import { usePriceGenerator } from "./PriceGenerator";
@@ -45,19 +45,12 @@ ErrorHeader.propTypes = {
   }),
 };
 
-function StockHeaderContent() {
+// Wrap the content that uses useSearchParams in a separate component
+function StockContent() {
   const searchParams = useSearchParams();
   const stockName = searchParams.get("name") || "Unknown Stock";
   const subStock = searchParams.get("sub_stock") || "";
-
   const price = usePriceGenerator();
-
-  const stockData = {
-    name: stockName,
-    price: price,
-    change: ((price - 175) / 175) * 100,
-    companyName: subStock || "Dynamic Company Name",
-  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-US", {
@@ -71,16 +64,14 @@ function StockHeaderContent() {
   const formatChange = (change) => {
     const isPositive = change >= 0;
     return (
-      <span
-        className={`ml-2 ${
-          isPositive ? "text-green-500" : "text-red-500"
-        }`}
-      >
+      <span className={`ml-2 ${isPositive ? "text-green-500" : "text-red-500"}`}>
         {isPositive ? "+" : ""}
         {change.toFixed(2)}%
       </span>
     );
   };
+
+  const change = ((price - 175) / 175) * 100;
 
   return (
     <motion.div
@@ -91,15 +82,13 @@ function StockHeaderContent() {
     >
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold text-white">
-            {stockData.name}
-          </h1>
-          <p className="text-gray-400">{stockData.companyName}</p>
+          <h1 className="text-4xl font-bold text-white">{stockName}</h1>
+          <p className="text-gray-400">{subStock || "Dynamic Company Name"}</p>
           <div className="flex items-center mt-2">
             <span className="text-3xl font-semibold text-white">
-              {formatPrice(stockData.price)}
+              {formatPrice(price)}
             </span>
-            {formatChange(stockData.change)}
+            {formatChange(change)}
           </div>
         </div>
         <div className="flex gap-4">
@@ -121,12 +110,14 @@ function StockHeaderContent() {
   );
 }
 
+// Main component with proper Suspense boundaries
 export default function StockHeader() {
   return (
     <ErrorBoundary FallbackComponent={ErrorHeader}>
       <Suspense fallback={<LoadingHeader />}>
-        <StockHeaderContent />
+        <StockContent />
       </Suspense>
     </ErrorBoundary>
   );
 }
+
