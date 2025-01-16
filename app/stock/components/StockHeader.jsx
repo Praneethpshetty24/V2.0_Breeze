@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import React, { Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import { motion } from "framer-motion"
-import { Heart, Bookmark } from 'lucide-react'
-import { ErrorBoundary } from "react-error-boundary"
-import PropTypes from 'prop-types'
-import { usePriceGenerator } from './PriceGenerator'
+import React, { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { Heart, Bookmark } from "lucide-react";
+import { ErrorBoundary } from "react-error-boundary";
+import PropTypes from "prop-types";
+import { usePriceGenerator } from "./PriceGenerator";
 
 function LoadingHeader() {
   return (
@@ -26,56 +26,61 @@ function LoadingHeader() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function ErrorHeader({ error }) {
   return (
     <div className="p-6 bg-[#1C1C1C] rounded-lg">
       <div className="text-red-400">
-        {error?.message || 'Failed to load stock data. Please try again later.'}
+        {error?.message || "Failed to load stock data. Please try again later."}
       </div>
     </div>
-  )
+  );
 }
 
 ErrorHeader.propTypes = {
   error: PropTypes.shape({
-    message: PropTypes.string
-  })
-}
+    message: PropTypes.string,
+  }),
+};
 
 function StockHeaderContent() {
-  const searchParams = useSearchParams()
-  const stockName = searchParams.get("name") || "Unknown Stock"
-  const subStock = searchParams.get("sub_stock") || ""
+  const searchParams = useSearchParams();
+  const stockName = searchParams.get("name") || "Unknown Stock";
+  const subStock = searchParams.get("sub_stock") || "";
 
-  const price = usePriceGenerator()
+  const price = usePriceGenerator();
 
   const stockData = {
     name: stockName,
     price: price,
     change: ((price - 175) / 175) * 100,
-    companyName: subStock || "Dynamic Company Name"
-  }
+    companyName: subStock || "Dynamic Company Name",
+  };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(price)
-  }
+      maximumFractionDigits: 2,
+    }).format(price);
+  };
 
   const formatChange = (change) => {
-    const isPositive = change >= 0
+    const isPositive = change >= 0;
     return (
-      <span className={`ml-2 ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-        {isPositive ? '+' : ''}{change.toFixed(2)}%
+      <span
+        className={`ml-2 ${
+          isPositive ? "text-green-500" : "text-red-500"
+        }`}
+      >
+        {isPositive ? "+" : ""}
+        {change.toFixed(2)}%
       </span>
-    )
-  }
+    );
+  };
 
   return (
     <motion.div
@@ -86,7 +91,9 @@ function StockHeaderContent() {
     >
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-4xl font-bold text-white">{stockData.name}</h1>
+          <h1 className="text-4xl font-bold text-white">
+            {stockData.name}
+          </h1>
           <p className="text-gray-400">{stockData.companyName}</p>
           <div className="flex items-center mt-2">
             <span className="text-3xl font-semibold text-white">
@@ -96,13 +103,13 @@ function StockHeaderContent() {
           </div>
         </div>
         <div className="flex gap-4">
-          <button 
+          <button
             className="text-gray-400 hover:text-[#9333EA] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:ring-offset-2 focus:ring-offset-[#1C1C1C] rounded-full p-1"
             aria-label="Like stock"
           >
             <Heart className="w-6 h-6" />
           </button>
-          <button 
+          <button
             className="text-gray-400 hover:text-[#9333EA] transition-colors focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:ring-offset-2 focus:ring-offset-[#1C1C1C] rounded-full p-1"
             aria-label="Bookmark stock"
           >
@@ -111,7 +118,7 @@ function StockHeaderContent() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
 export default function StockHeader() {
@@ -121,6 +128,5 @@ export default function StockHeader() {
         <StockHeaderContent />
       </Suspense>
     </ErrorBoundary>
-  )
+  );
 }
-
