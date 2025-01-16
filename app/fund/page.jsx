@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 const BuyPageContent = () => {
   const searchParams = useSearchParams();
   const passedPrice = parseFloat(searchParams.get('price')) || 182.63; // Default price if not passed
+  const stockName = searchParams.get('name') || "Unknown Stock";  // Retrieve stock name dynamically
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -67,7 +68,7 @@ const BuyPageContent = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-[#8B5CF6]" />
-                  <h2 className="text-2xl font-bold">AAPL</h2>
+                  <h2 className="text-2xl font-bold">{stockName}</h2> {/* Display dynamic stock name */}
                 </div>
                 <div className="flex items-baseline space-x-2">
                   <span className="text-3xl font-bold">
