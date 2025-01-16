@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   FiCreditCard, 
@@ -18,7 +18,7 @@ import {
 } from 'react-icons/fi'
 import { Loading } from '@/components/ui/loading'
 import { db, auth } from '@/firebase'
-import { collection, addDoc, serverTimestamp, doc, setDoc, query, where, getDocs } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, doc, setDoc, query, where, getDocs, getDoc } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 
 export default function PANCardVerification() {
@@ -26,6 +26,25 @@ export default function PANCardVerification() {
   const [panNumber, setPanNumber] = useState('')
   const router = useRouter()
   
+  useEffect(() => {
+    const checkPANVerification = async () => {
+      const user = auth.currentUser
+      if (!user) {
+        router.push('/login')
+        return
+      }
+
+      const docRef = doc(db, 'data', user.uid)
+      const docSnap = await getDoc(docRef)
+      
+      if (docSnap.exists() && docSnap.data().panNumber) {
+        router.push('/home')
+      }
+    }
+
+    checkPANVerification()
+  }, [router])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)

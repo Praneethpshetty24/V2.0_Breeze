@@ -1,7 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '@/firebase'; // Import the initialized auth object
+import { auth, db } from '@/firebase'; 
+import { doc, getDoc } from 'firebase/firestore'; 
 import BackgroundIcons from '@/components/BackgroundIcons';
 import { useRouter } from 'next/navigation';
 
@@ -12,10 +13,18 @@ const Page = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setUser(user);
       if (user) {
-        router.push('/profile-setup');
+        // Check if user has completed profile setup
+        const docRef = doc(db, 'data', user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists() && docSnap.data().panNumber) {
+          router.push('/home');
+        } else {
+          router.push('/profile-setup');
+        }
       }
     });
 

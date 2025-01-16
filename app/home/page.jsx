@@ -11,6 +11,8 @@ import Achievements  from './components1/achievements'
 import { Profile } from './components1/profile'
 import { Chat } from './components1/chat'
 import { AiChat } from '@/app/home/components1/aichat'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/firebase'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home')
@@ -20,8 +22,17 @@ export default function App() {
     { id: 'portfolio', label: 'Portfolio', icon: LayoutGrid },
     { id: 'achievements', label: 'Achievements', icon: Trophy },
     { id: 'profile', label: 'Profile', icon: UserCircle },
-    { id: 'aiChat', label: 'AI Chat', icon: MessageCircle }, // New Tab
+    { id: 'aiChat', label: 'AI Chat', icon: MessageCircle }, 
   ]
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      window.location.href = '/';  
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0C0C0C]">
@@ -35,21 +46,31 @@ export default function App() {
             </span>
           </div>
           
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" className="text-white">
-                <Users2 className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent 
-              side="right" 
-              className="p-0 bg-[#0C0C0C] text-white border-[#2C2C2C] w-[95%] sm:w-[450px] md:w-[550px] lg:w-[600px] flex flex-col h-full"
+          <div className="flex items-center gap-4">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" className="text-white">
+                  <Users2 className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent 
+                side="right" 
+                className="p-0 bg-[#0C0C0C] text-white border-[#2C2C2C] w-[95%] sm:w-[450px] md:w-[550px] lg:w-[600px] flex flex-col h-full"
+              >
+                <div className="flex flex-col h-full">
+                  <Chat />
+                </div>
+              </SheetContent>
+            </Sheet>
+            
+            <Button 
+              variant="ghost" 
+              onClick={handleLogout}
+              className="text-white hover:text-purple-500 border-2 border-violet-500 px-4 py-2 "
             >
-              <div className="flex flex-col h-full">
-                <Chat />
-              </div>
-            </SheetContent>
-          </Sheet>
+              Logout
+            </Button>
+          </div>
         </div>
       </nav>
 
