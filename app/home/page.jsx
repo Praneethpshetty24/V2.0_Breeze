@@ -49,8 +49,8 @@ export default function App() {
           <div className="flex items-center gap-4">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" className="text-white">
-                  <Users2 className="h-5 w-5" />
+                <Button variant="ghost" className="text-white hover:text-purple-500 border-2 border-violet-500 px-4 py-2 ">
+                  <Users2 className="h-5 w-5 " />
                 </Button>
               </SheetTrigger>
               <SheetContent 
