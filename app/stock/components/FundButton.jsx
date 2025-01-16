@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Button } from "@/components/ui/button"
-import { PlusIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { usePriceGenerator } from './PriceGenerator'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { PlusIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { usePriceGenerator } from './PriceGenerator';
 
 export default function FundButton() {
-  const router = useRouter()
-  const price = usePriceGenerator()
+  const router = useRouter();
+  const price = usePriceGenerator();
 
   const handleFundClick = () => {
-    router.push('/fund') 
-  }
+    router.push(`/fund?price=${price}`);
+  };
 
   return (
     <div className="flex flex-col items-center mt-6">
@@ -23,14 +23,14 @@ export default function FundButton() {
         animate={{
           opacity: 1,
           y: 0,
-          transition: { duration: 0.5, ease: "easeOut" }
+          transition: { duration: 0.5, ease: 'easeOut' },
         }}
         className="text-2xl font-bold mb-4"
         style={{
-          color: "white",
-          background: "linear-gradient(90deg, #9333EA, #7C2DC7, #9333EA)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
+          color: 'white',
+          background: 'linear-gradient(90deg, #9333EA, #7C2DC7, #9333EA)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
         }}
       >
         Current Price: ₹{price.toFixed(2)}
@@ -40,8 +40,8 @@ export default function FundButton() {
         animate={{ opacity: 1, y: 0 }}
         className="flex justify-center"
       >
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           className="w-full md:w-auto bg-[#9333EA] text-white hover:bg-[#7C2DC7]"
           onClick={handleFundClick}
         >
@@ -50,5 +50,5 @@ export default function FundButton() {
         </Button>
       </motion.div>
     </div>
-  )
+  );
 }

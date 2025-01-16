@@ -1,20 +1,22 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Minus, ArrowRight, TrendingUp } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import BackgroundIcons from '@/components/BackgroundIcons';
+import { useSearchParams } from 'next/navigation';
 
 const BuyPage = () => {
+  const searchParams = useSearchParams();
+  const passedPrice = parseFloat(searchParams.get('price')) || 182.63; // Default price if not passed
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const pricePerUnit = 182.63;
 
-  const incrementQuantity = () => setQuantity(prev => prev + 1);
-  const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+  const incrementQuantity = () => setQuantity((prev) => prev + 1);
+  const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
 
   const handleBuyNowClick = async () => {
     try {
@@ -25,13 +27,13 @@ const BuyPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           quantity,
-          unitPrice: pricePerUnit * 100 // Convert to cents for Stripe
-        })
+          unitPrice: passedPrice * 100, // Convert to cents for Stripe
+        }),
       });
       const data = await response.json();
-      
+
       if (response.ok && data.url) {
         // Redirect to Stripe Checkout
         window.location.href = data.url;
@@ -51,15 +53,15 @@ const BuyPage = () => {
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ 
+        transition={{
           duration: 0.6,
-          ease: "easeOut"
+          ease: 'easeOut',
         }}
         className="w-full max-w-md relative z-10"
       >
         <Card className="bg-gradient-to-br from-[#1E1E1E] to-[#252525] border-0 p-8 rounded-2xl shadow-2xl">
           <div className="h-1 w-20 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] rounded-full mb-6" />
-          
+
           <div className="space-y-8">
             <div className="flex items-start justify-between">
               <div className="space-y-2">
@@ -68,8 +70,10 @@ const BuyPage = () => {
                   <h2 className="text-2xl font-bold">AAPL</h2>
                 </div>
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-3xl font-bold">₹{pricePerUnit.toFixed(2)}</span>
-                  <motion.span 
+                  <span className="text-3xl font-bold">
+                    ₹{passedPrice.toFixed(2)}
+                  </span>
+                  <motion.span
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="text-green-400 text-sm"
@@ -96,7 +100,7 @@ const BuyPage = () => {
                 >
                   <Minus className="w-5 h-5 text-[#8B5CF6]" />
                 </motion.button>
-                
+
                 <motion.div
                   key={quantity}
                   initial={{ scale: 0.8, opacity: 0 }}
@@ -119,13 +123,17 @@ const BuyPage = () => {
             <div className="space-y-3">
               <label className="text-sm text-gray-400 font-medium">Total Amount</label>
               <div className="p-4 bg-[#2A2A2A]/30 backdrop-blur-sm rounded-xl">
-                <motion.div 
+                <motion.div
                   key={quantity}
                   initial={{ scale: 0.95 }}
                   animate={{ scale: 1 }}
                   className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]"
                 >
-                  ₹{(pricePerUnit * quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ₹
+                  {(passedPrice * quantity).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </motion.div>
               </div>
             </div>
@@ -134,7 +142,7 @@ const BuyPage = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Button 
+              <Button
                 className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] text-white py-6 text-lg font-medium rounded-xl shadow-lg shadow-[#8B5CF6]/20"
                 onClick={handleBuyNowClick}
                 disabled={loading}
@@ -144,9 +152,7 @@ const BuyPage = () => {
               </Button>
             </motion.div>
 
-            {error && (
-              <p className="mt-2 text-red-500 text-sm">{error}</p>
-            )}
+            {error && <p className="mt-2 text-red-500 text-sm">{error}</p>}
           </div>
         </Card>
       </motion.div>
