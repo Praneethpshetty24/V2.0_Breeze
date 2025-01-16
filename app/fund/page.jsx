@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Minus, ArrowRight, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import BackgroundIcons from '@/components/BackgroundIcons';
 import { useSearchParams } from 'next/navigation';
 
-const BuyPage = () => {
+const BuyPageContent = () => {
   const searchParams = useSearchParams();
   const passedPrice = parseFloat(searchParams.get('price')) || 182.63; // Default price if not passed
   const [quantity, setQuantity] = useState(1);
@@ -159,5 +159,11 @@ const BuyPage = () => {
     </div>
   );
 };
+
+const BuyPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <BuyPageContent />
+  </Suspense>
+);
 
 export default BuyPage;
