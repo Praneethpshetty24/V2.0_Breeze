@@ -1,20 +1,31 @@
 'use client';
 
-import React from "react";
+import React, { Suspense } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePriceGenerator } from "./PriceGenerator";
 
-export default function FundButton() {
+// Loading state component
+function LoadingState() {
+  return (
+    <div className="flex flex-col items-center mt-6">
+      <div className="h-8 w-48 bg-gray-700 rounded mb-4 animate-pulse" />
+      <div className="h-10 w-32 bg-gray-700 rounded animate-pulse" />
+    </div>
+  );
+}
+
+// Main content component that uses useSearchParams
+function FundButtonContent() {
   const router = useRouter();
   const price = usePriceGenerator();
   const searchParams = useSearchParams();
   const stockName = searchParams.get("name") || "Unknown Stock";
 
   const handleFundClick = () => {
-    router.push(`/fund?price=${price}&name=${stockName}`);
+    router.push(`/fund?price=${price}&name=${encodeURIComponent(stockName)}`);
   };
 
   return (
@@ -44,7 +55,7 @@ export default function FundButton() {
       >
         <Button
           size="lg"
-          className="w-full md:w-auto bg-[#9333EA] text-white hover:bg-[#7C2DC7]"
+          className="w-full md:w-auto bg-[#9333EA] text-white hover:bg-[#7C2DC7] transition-colors duration-200"
           onClick={handleFundClick}
         >
           <PlusIcon className="w-4 h-4 mr-2" />
@@ -54,3 +65,13 @@ export default function FundButton() {
     </div>
   );
 }
+
+// Main component with Suspense boundary
+export default function FundButton() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <FundButtonContent />
+    </Suspense>
+  );
+}
+
