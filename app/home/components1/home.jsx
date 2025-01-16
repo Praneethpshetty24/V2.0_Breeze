@@ -68,7 +68,14 @@ function Home() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#121212] text-white p-8">
-        Loading....
+        <div className="min-h-screen bg-[#121212] text-white p-8 flex items-center justify-center">
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+      >
+        <FaChartLine className="text-purple-500 text-4xl" />
+      </motion.div>
+    </div>
       </div>
     );
   }
