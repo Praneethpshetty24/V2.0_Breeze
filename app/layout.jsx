@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Breeze Funding App",
-  description: "Stock funding made secure and easy with AI assistance ",
+  title: "Breeze stock-funding App",
+  description: "Stock funding made secure and easy with AI analytics ",
   icons: {
     icon: "https://webstockreview.net/images/air-clipart-air-movement-2.png",
   },
