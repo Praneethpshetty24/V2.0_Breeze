@@ -1,13 +1,33 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Minus, ArrowRight, TrendingUp } from 'lucide-react';  // Reverted icon to TrendingUp
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import BackgroundIcons from '@/components/BackgroundIcons';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 const SellPage = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
+  const [stockData, setStockData] = useState({
+    name: searchParams.get('name') || 'Unknown',
+    maxQuantity: parseInt(searchParams.get('quantity')) || 0,
+    value: parseFloat(searchParams.get('value')) || 0,
+    pricePerShare: 0
+  });
+
+  useEffect(() => {
+    // Calculate price per share when stockData is initialized
+    if (stockData.maxQuantity > 0) {
+      const pricePerShare = stockData.value / stockData.maxQuantity;
+      setStockData(prev => ({
+        ...prev,
+        pricePerShare: pricePerShare
+      }));
+    }
+  }, []);
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
@@ -32,16 +52,21 @@ const SellPage = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-[#8B5CF6]" />
-                  <h2 className="text-2xl font-bold">AAPL</h2>
+                  <h2 className="text-2xl font-bold">{stockData.name}</h2>
                 </div>
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-3xl font-bold">$182.63</span>
+                  <span className="text-3xl font-bold">
+                    ₹{stockData.pricePerShare.toLocaleString('en-IN', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    })}
+                  </span>
                   <motion.span 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="text-green-400 text-sm"
                   >
-                    +1.25%
+                    per share
                   </motion.span>
                 </div>
               </div>
@@ -100,7 +125,10 @@ const SellPage = () => {
                   animate={{ scale: 1 }}
                   className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]"
                 >
-                  ${(182.63 * quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ₹{(stockData.pricePerShare * quantity).toLocaleString('en-IN', { 
+                    minimumFractionDigits: 2, 
+                    maximumFractionDigits: 2 
+                  })}
                 </motion.div>
               </div>
             </div>

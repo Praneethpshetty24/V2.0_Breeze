@@ -118,7 +118,7 @@ export function Portfolio() {
                     className="bg-purple-600 hover:bg-purple-700 px-6 py-2 transition-colors duration-300"
                     onClick={(e) => {
                       e.stopPropagation()
-                      router.push(`/sell?name=${encodeURIComponent(stock.name)}`)
+                      router.push(`/sell?name=${encodeURIComponent(stock.name)}&quantity=${stock.quantity}&value=${stock.value}`)
                     }}
                   >
                     Sell
