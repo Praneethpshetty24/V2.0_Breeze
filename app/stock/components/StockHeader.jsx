@@ -51,7 +51,6 @@ ErrorHeader.propTypes = {
 function StockContent() {
   const searchParams = useSearchParams();
   const stockName = searchParams.get("name") || "Unknown Stock";
-  const subStock = searchParams.get("sub_stock") || "";
   const price = usePriceGenerator();
 
   const formatPrice = (price) => {
@@ -85,7 +84,6 @@ function StockContent() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-4xl font-bold text-white">{stockName}</h1>
-          <p className="text-gray-400">{subStock || "Dynamic Company Name"}</p>
           <div className="flex items-center mt-2">
             <span className="text-3xl font-semibold text-white">
               {formatPrice(price)}

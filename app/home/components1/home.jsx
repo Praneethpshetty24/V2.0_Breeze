@@ -105,7 +105,7 @@ function Home() {
               whileTap={{ scale: 0.95 }}
             >
               <SpotlightCard spotlightColor="rgba(0, 229, 255, 0.2)">
-                <a href={`/stock?name=${stock.Stock}&sub_stock=${stock.Sub_stock}&pe=${stock.PE}&marketCap=${stock.Market_cap}&high52w=${stock["52W_high"]}&low52w=${stock["52W_low"]}`}>
+                <a href={`/stock?name=${stock.Stock}&pe=${stock.PE}&marketCap=${stock.Market_cap}&high52w=${stock["52W_high"]}&low52w=${stock["52W_low"]}`}>
                   <div className="text-center">
                     <FaChartLine className="text-green-400 text-3xl mb-2 mx-auto" />
                     <span className="text-sm text-gray-400">{stock.Stock}</span>

@@ -8,6 +8,7 @@ import SpotlightCard from "@/components/ui/SpotlightCard";
 
 function Mostlikeddb() {
   const [topStocks, setTopStocks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -29,23 +30,35 @@ function Mostlikeddb() {
 
   useEffect(() => {
     const fetchMostLikedStocks = async () => {
-      const stocksRef = collection(db, 'stockLikes');
-      const snapshot = await getDocs(stocksRef);
-      
-      const stocks = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      try {
+        const stocksRef = collection(db, 'stockLikes');
+        const snapshot = await getDocs(stocksRef);
+        
+        const stocks = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
 
-      const sortedStocks = stocks.sort((a, b) => 
-        (b.likeCount || 0) - (a.likeCount || 0)
-      );
+        const sortedStocks = stocks.sort((a, b) => 
+          (b.likeCount || 0) - (a.likeCount || 0)
+        );
 
-      setTopStocks(sortedStocks.slice(0, 2));
+        setTopStocks(sortedStocks.slice(0, 2));
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchMostLikedStocks();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[200px]">
+        <Heart className="w-8 h-8 text-[#00FF94] animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
