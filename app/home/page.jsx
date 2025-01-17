@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Wind, HomeIcon, Trophy, LayoutGrid, Users2, UserCircle, MessageCircle } from 'lucide-react'
+import { Wind, HomeIcon, Trophy, LayoutGrid, Users2, UserCircle, MessageCircle, Clock } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import Home from './components1/home'
@@ -13,6 +13,7 @@ import { Chat } from './components1/chat'
 import { AiChat } from '@/app/home/components1/aichat'
 import { signOut } from 'firebase/auth'
 import { auth } from '@/firebase'
+import Order from './components1/order'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home')
@@ -22,7 +23,8 @@ export default function App() {
     { id: 'portfolio', label: 'Portfolio', icon: LayoutGrid },
     { id: 'achievements', label: 'Achievements', icon: Trophy },
     { id: 'profile', label: 'Profile', icon: UserCircle },
-    { id: 'aiChat', label: 'AI Chat', icon: MessageCircle }, 
+    { id: 'aiChat', label: 'AI Chat', icon: MessageCircle },
+    { id: 'order', label: 'Order', icon: Clock },
   ]
 
   const handleLogout = async () => {
@@ -109,7 +111,8 @@ export default function App() {
         {activeTab === 'portfolio' && <Portfolio />}
         {activeTab === 'achievements' && <Achievements />}
         {activeTab === 'profile' && <Profile />}
-        {activeTab === 'aiChat' && <AiChat />} {/* New Content */}
+        {activeTab === 'aiChat' && <AiChat />}
+        {activeTab === 'order' && <Order />}
       </main>
     </div>
   )
