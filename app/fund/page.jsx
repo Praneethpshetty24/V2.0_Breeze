@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import BackgroundIcons from '@/components/BackgroundIcons';
 import { useSearchParams } from 'next/navigation';
+import {db, auth} from '@/firebase'
+import { collection, addDoc, serverTimestamp, getDocs, query, where, updateDoc } from 'firebase/firestore';
 
 const BuyPageContent = () => {
   const searchParams = useSearchParams();
@@ -24,6 +26,44 @@ const BuyPageContent = () => {
       setLoading(true);
       setError(null);
       
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('Please login to make a purchase');
+      }
+      
+      // Check if user already has this stock
+      const purchasesRef = collection(db, 'purchases');
+      const existingPurchaseSnapshot = await getDocs(query(
+        purchasesRef,
+        where('userId', '==', user.uid),
+        where('stockName', '==', stockName)
+      ));
+
+      let purchaseRef;
+      
+      if (!existingPurchaseSnapshot.empty) {
+        // Update existing purchase
+        const existingDoc = existingPurchaseSnapshot.docs[0];
+        const existingQuantity = existingDoc.data().quantity;
+        purchaseRef = existingDoc.ref;
+        
+        await updateDoc(purchaseRef, {
+          quantity: existingQuantity + quantity,
+          totalAmount: Number((passedPrice * (existingQuantity + quantity)).toFixed(2)),
+          timestamp: serverTimestamp(),
+        });
+      } else {
+        // Create new purchase
+        purchaseRef = await addDoc(collection(db, 'purchases'), {
+          userId: user.uid,
+          stockName: stockName,
+          quantity: quantity,
+          price: passedPrice,
+          totalAmount: Number((passedPrice * quantity).toFixed(2)),
+          timestamp: serverTimestamp(),
+        });
+      }
+      
       const response = await fetch('/api/payment', {
         method: 'POST',
         headers: {
@@ -31,8 +71,9 @@ const BuyPageContent = () => {
         },
         body: JSON.stringify({
           quantity,
-          unitPrice: Math.round(passedPrice * 100), // Convert to cents and ensure it's rounded
+          unitPrice: Math.round(passedPrice * 100),
           stockName: stockName,
+          purchaseId: purchaseRef.id,
         }),
       });
 
@@ -43,7 +84,12 @@ const BuyPageContent = () => {
       }
 
       if (data.url) {
-        window.location.href = data.url;
+        // Add query parameters to success URL
+        const successUrl = new URL(data.url);
+        successUrl.searchParams.append('stockName', stockName);
+        successUrl.searchParams.append('quantity', quantity.toString());
+        successUrl.searchParams.append('price', passedPrice.toString());
+        window.location.href = successUrl.toString();
       } else {
         throw new Error('No checkout URL received');
       }
@@ -134,11 +180,7 @@ const BuyPageContent = () => {
                   animate={{ scale: 1 }}
                   className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]"
                 >
-                  ₹
-                  {(passedPrice * quantity).toLocaleString('en-IN', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  ₹{(passedPrice * quantity).toFixed(2)}
                 </motion.div>
               </div>
             </div>
