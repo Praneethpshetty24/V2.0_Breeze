@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import BackgroundIcons from '@/components/BackgroundIcons';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { db, auth } from '@/firebase';
+import { doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { toast } from 'sonner';
 
 const SellPage = () => {
   return (
@@ -20,6 +23,7 @@ const SellPageContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [stockData, setStockData] = useState({
     name: searchParams.get('name') || 'Unknown',
     maxQuantity: parseInt(searchParams.get('quantity')) || 0,
@@ -40,6 +44,58 @@ const SellPageContent = () => {
 
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+
+  const handleSell = async () => {
+    try {
+      setIsLoading(true);
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        toast.error('Please login to sell stocks');
+        return;
+      }
+
+      // Find the purchase document
+      const purchasesRef = collection(db, 'purchases');
+      const q = query(
+        purchasesRef, 
+        where('userId', '==', userId),
+        where('stockName', '==', stockData.name)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        toast.error('Purchase not found');
+        return;
+      }
+
+      const purchaseDoc = querySnapshot.docs[0];
+      const currentQuantity = purchaseDoc.data().quantity;
+
+      if (quantity > currentQuantity) {
+        toast.error('Cannot sell more than owned quantity');
+        return;
+      }
+
+      // Calculate new values
+      const newQuantity = currentQuantity - quantity;
+      const newTotalAmount = (newQuantity * stockData.pricePerShare);
+
+      // Update the purchase document
+      await updateDoc(doc(db, 'purchases', purchaseDoc.id), {
+        quantity: newQuantity,
+        totalAmount: newTotalAmount
+      });
+
+      toast.success('Stock sold successfully!');
+      router.push('/home'); // Redirect to home after successful sale
+
+    } catch (error) {
+      console.error('Error selling stock:', error);
+      toast.error('Failed to sell stock');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center p-4 relative overflow-hidden">
@@ -148,9 +204,11 @@ const SellPageContent = () => {
             >
               <Button 
                 className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] text-white py-6 text-lg font-medium rounded-xl shadow-lg shadow-[#8B5CF6]/20"
+                onClick={handleSell}
+                disabled={isLoading || quantity > stockData.maxQuantity}
               >
-                Sell Now
-                <ArrowRight className="ml-2 w-5 h-5" />
+                {isLoading ? 'Processing...' : 'Sell Now'}
+                {!isLoading && <ArrowRight className="ml-2 w-5 h-5" />}
               </Button>
             </motion.div>
           </div>

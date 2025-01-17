@@ -4,16 +4,17 @@ import { motion } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { TrendingUpIcon, TrendingDownIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db, auth } from '@/firebase'
 
 export function Portfolio() {
   const router = useRouter()
+  const pathname = usePathname()
   const [purchasedStocks, setPurchasedStocks] = useState([])
   const [totalAssets, setTotalAssets] = useState(0)
-  const targetAmount = 30000 // Fixed target amount
+  const targetAmount = 30000 
   
   useEffect(() => {
     const fetchPurchases = async () => {
@@ -25,11 +26,13 @@ export function Portfolio() {
         const userPurchasesQuery = query(purchasesRef, where('userId', '==', userId))
         const snapshot = await getDocs(userPurchasesQuery)
         const stocks = snapshot.docs.map(doc => ({
+          id: doc.id,
           name: doc.data().stockName,
           value: doc.data().totalAmount,
           quantity: doc.data().quantity,
           trend: 'up',
-        }))
+        })).filter(stock => stock.quantity > 0) // Only show stocks with quantity > 0
+        
         setPurchasedStocks(stocks)
         // Calculate total assets
         const total = stocks.reduce((sum, stock) => sum + stock.value, 0)
@@ -40,7 +43,7 @@ export function Portfolio() {
     }
 
     fetchPurchases()
-  }, [])
+  }, [pathname]) // Re-fetch when pathname changes
 
   // Calculate progress percentage
   const progressPercentage = Math.min((totalAssets / targetAmount) * 100, 100)
