@@ -60,9 +60,10 @@ export default function OrderPage() {
               <p className="text-sm font-medium text-purple-400">Total Spent</p>
               <h2 className="text-3xl font-bold text-purple-500">₹{totalSpent.toFixed(2)}</h2>
             </div>
-            <div>
+            <div className="flex flex-col items-end">
               <p className="text-sm font-medium text-green-400">Total Orders</p>
               <h2 className="text-3xl font-bold text-green-500">{orders.length}</h2>
+              <a href="/analyse" className="mt-4 inline-block bg-purple-500 text-white py-2 px-4 rounded-[30px]">Analyze</a>
             </div>
           </div>
         </CardContent>
