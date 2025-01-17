@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import Mostlikeddb from "./features1/Mostlikeddb";
+import Mostboughtdb from "./features1/Mostboughtdb";
 
 
 const containerVariants = {
@@ -86,12 +87,7 @@ function Home() {
       
 
       {/* Most Bought Section */}
-      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 text-green-400">Most Bought</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {renderStaticStockCards("mostBought")}
-        </div>
-      </motion.div>
+      <Mostboughtdb />
 
       {/* Start Funding Here Section */}
       <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mt-16">
