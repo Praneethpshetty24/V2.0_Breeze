@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button'
 import { TrendingUpIcon, TrendingDownIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { collection, getDocs } from 'firebase/firestore'
-import { db } from '@/firebase'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { db, auth } from '@/firebase'
 
 export function Portfolio() {
   const router = useRouter()
@@ -18,8 +18,12 @@ export function Portfolio() {
   useEffect(() => {
     const fetchPurchases = async () => {
       try {
+        const userId = auth.currentUser?.uid
+        if (!userId) return
+
         const purchasesRef = collection(db, 'purchases')
-        const snapshot = await getDocs(purchasesRef)
+        const userPurchasesQuery = query(purchasesRef, where('userId', '==', userId))
+        const snapshot = await getDocs(userPurchasesQuery)
         const stocks = snapshot.docs.map(doc => ({
           name: doc.data().stockName,
           value: doc.data().totalAmount,
