@@ -49,22 +49,22 @@ Date: ${date}`;
 
         const prompt = `Analyze these stock purchase records and provide a detailed summary in the following format:
 
-        ### 📊 Transaction Overview
+         📊 Transaction Overview
         - Total number of transactions
         - Total value traded
         - Average transaction value
 
-        ### 🔍 Stock Analysis
+         🔍 Stock Analysis
         - Most frequently traded stocks
         - Highest value transactions
         - Price range analysis
 
-        ### 💡 Trading Patterns
+        💡 Trading Patterns
         - Time-based patterns
         - Volume patterns
         - Notable insights
 
-        ### 🚀 Recommendations
+         🚀 Recommendations
         - Trading strategy suggestions
         - Risk management tips
         - System improvements

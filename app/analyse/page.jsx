@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '@/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,9 +13,12 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { FaChartLine, FaSpinner } from 'react-icons/fa';
+import { FaChartLine } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import Navbar from './components2/Navbar';
+import ChartSection from './components2/ChartSection';
+import AnalysisSummary from './components2/AnalysisSummary';
+import LoadingSpinner from './components2/LoadingSpinner';
 
 ChartJS.register(
   CategoryScale,
@@ -28,7 +30,7 @@ ChartJS.register(
   Legend
 );
 
-function AnalysisPage() {
+export default function AnalysisPage() {
   const [summary, setSummary] = useState('');
   const [loading, setLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(true);
@@ -83,7 +85,7 @@ function AnalysisPage() {
                 label: 'Purchase Values Over Time',
                 data: data.chartData.values,
                 fill: true,
-                backgroundColor: 'rgba(0, 255, 127, 0.1)',
+                backgroundColor: 'rgba(147, 51, 234, 0.1)',
                 borderColor: '#00ff7f',
                 tension: 0.4,
                 pointRadius: 4,
@@ -109,137 +111,28 @@ function AnalysisPage() {
     fetchAndAnalyze();
   }, [authLoading]);
 
-  const formatSummary = (text) => {
-    if (!text) return [];
-    return text.split('\n').map((line, index) => {
-      if (line.startsWith('###')) {
-        return { type: 'heading', content: line.replace('###', '').trim() };
-      }
-      return { type: 'content', content: line };
-    });
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Navigation */}
-        <nav className="flex items-center justify-between mb-8">
-          <Link href="/home" className="text-2xl font-bold text-purple-500">
-            Breeze
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link href="/home" className="text-gray-400 hover:text-white">
-              Home
-            </Link>
-          </div>
-        </nav>
-
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
+      <Navbar />
+      
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center mb-8">
             <FaChartLine className="text-3xl text-[#00ff7f] mr-3" />
-            <h1 className="text-3xl font-bold">Stock Purchase Analysis</h1>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-[#00ff7f] text-transparent bg-clip-text">
+              Stock Purchase Analysis
+            </h1>
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center p-12">
-              <FaSpinner className="animate-spin text-4xl text-[#00ff7f] mb-4" />
-              <p className="text-gray-400 text-lg">Analyzing your purchases...</p>
-            </div>
+            <LoadingSpinner />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Chart Section */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="bg-gray-900 rounded-xl border border-gray-800 p-6"
-              >
-                <h2 className="text-xl font-semibold mb-4 text-[#00ff7f]">Purchase Trends</h2>
-                {chartData && (
-                  <div className="h-[400px]">
-                    <Line 
-                      data={chartData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            labels: {
-                              color: '#fff'
-                            }
-                          },
-                          tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            padding: 12,
-                            titleFont: {
-                              size: 14,
-                              weight: 'bold'
-                            },
-                            bodyFont: {
-                              size: 13
-                            }
-                          }
-                        },
-                        scales: {
-                          y: {
-                            beginAtZero: true,
-                            grid: {
-                              color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                              color: '#fff'
-                            },
-                            title: {
-                              display: true,
-                              text: 'Purchase Value (₹)',
-                              color: '#fff',
-                              font: {
-                                size: 12,
-                                weight: 'bold'
-                              }
-                            }
-                          },
-                          x: {
-                            grid: {
-                              color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            ticks: {
-                              color: '#fff'
-                            }
-                          }
-                        }
-                      }}
-                    />
-                  </div>
-                )}
-              </motion.div>
-
-              {/* Analysis Summary Section */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="bg-gray-900 rounded-xl border border-gray-800 p-6"
-              >
-                <h2 className="text-xl font-semibold mb-4 text-[#00ff7f]">Analysis Summary</h2>
-                <div className="space-y-4">
-                  {formatSummary(summary).map((item, index) => (
-                    <div 
-                      key={index} 
-                      className={`${
-                        item.type === 'heading' 
-                          ? 'text-lg font-semibold text-[#00ff7f] mt-6' 
-                          : 'text-gray-300 ml-6'
-                      }`}
-                    >
-                      {item.content}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+              <ChartSection chartData={chartData} />
+              <AnalysisSummary summary={summary} />
             </div>
           )}
         </motion.div>
@@ -247,6 +140,4 @@ function AnalysisPage() {
     </div>
   );
 }
-
-export default AnalysisPage;
 
