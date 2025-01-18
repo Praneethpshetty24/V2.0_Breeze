@@ -4,7 +4,7 @@ Breeze is a sleek and intuitive stock funding application designed to enhance yo
 
 ## AI Features
 
-Breeze also includes advanced AI capabilities such as an AI chat feature for personalized assistance and AI order analysis to help you make informed investment decisions. 
+Breeze also includes AI capabilities such as an AI chat feature for personalized assistance and AI order analysis to help you make informed investment decisions. 
 
 
 
