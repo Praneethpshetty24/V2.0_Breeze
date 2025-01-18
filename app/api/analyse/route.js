@@ -67,7 +67,7 @@ Date: ${date}`;
          🚀 Recommendations
         - Trading strategy suggestions
         - Risk management tips
-        - System improvements
+        - Safety tips
 
         Here are the purchases:
         ${purchasesSummary}`;

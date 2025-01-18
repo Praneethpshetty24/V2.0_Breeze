@@ -35,7 +35,7 @@ export default function AnalysisSummary({ summary }) {
       animate={{ opacity: 1, x: 0 }}
       className="bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-800 p-6 shadow-xl"
     >
-      <h2 className="text-xl font-semibold mb-4 bg-gradient-to-r from-purple-500 to-[#00ff7f] text-transparent bg-clip-text">
+      <h2 className="text-2xl font-bold text-white mb-8">
         Analysis Summary
       </h2>
       <div className="space-y-6">
@@ -44,7 +44,7 @@ export default function AnalysisSummary({ summary }) {
             case 'section':
               return (
                 <div key={index} className="mt-8 first:mt-0">
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-purple-500 to-[#00ff7f] text-transparent bg-clip-text flex items-center gap-2">
+                  <h3 className="text-2xl font-bold text-white flex items-center gap-3 mb-6">
                     {item.content}
                   </h3>
                 </div>
@@ -52,16 +52,16 @@ export default function AnalysisSummary({ summary }) {
             case 'subsection':
               return (
                 <div key={index} className="mt-4">
-                  <h4 className="text-lg font-semibold text-purple-400">
+                  <h4 className="text-lg font-semibold text-gray-300">
                     {item.content}
                   </h4>
                 </div>
               );
             case 'item':
               return (
-                <div key={index} className="ml-4 mt-2 flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#00ff7f]" />
-                  <p className="text-gray-300">
+                <div key={index} className="ml-4 mt-3 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                  <p className="text-gray-300 text-base">
                     {item.content}
                   </p>
                 </div>
