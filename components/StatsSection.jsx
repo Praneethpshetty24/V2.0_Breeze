@@ -3,53 +3,30 @@ import { DollarSign, Clock, Target, Users, Shield, Zap } from 'lucide-react';
 
 const stats = [
   {
-    value: "$2.5B+",
-    label: "Trading Volume",
-    icon: DollarSign,
-    description: "Total value traded on platform"
-  },
-  {
-    value: "99.99%",
-    label: "Uptime",
-    icon: Clock,
-    description: "Platform reliability"
-  },
-  {
-    value: "0.1ms",
-    label: "Execution",
-    icon: Target,
-    description: "Average trade execution time"
-  },
-  {
-    value: "150+",
-    label: "Markets",
+    value: "AI Chat",
+    label: "AI Assistant",
     icon: Users,
-    description: "Available trading pairs"
+    description: "Interactive chat powered by AI"
   },
   {
-    value: "500K+",
-    label: "Users",
-    icon: Users,
-    description: "Active global traders"
-  },
-  {
-    value: "24/7",
-    label: "Support",
-    icon: Clock,
-    description: "Round-the-clock assistance"
-  },
-  {
-    value: "100+",
-    label: "Security Audits",
+    value: "AI Analyst",
+    label: "Analysis",
     icon: Shield,
-    description: "Annual security verifications"
+    description: "AI-driven market analysis"
   },
   {
-    value: "5ms",
-    label: "Latency",
-    icon: Zap,
-    description: "Average network latency"
-  }
+    value: "High Security",
+    label: "Security",
+    icon: Shield,
+    description: "Top-notch security measures"
+  },
+  {
+    value: "Community",
+    label: " Community",
+    icon: Users,
+    description: "Engage with community"
+  },
+
 ];
 
 const StatsCard = ({ value, label, Icon, description, delay }) => {
