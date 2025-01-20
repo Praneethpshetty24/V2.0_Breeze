@@ -20,6 +20,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const isAuthPage = children.props?.childPropSegment === 'auth';
+
   return (
     <html lang="en">
       <head>

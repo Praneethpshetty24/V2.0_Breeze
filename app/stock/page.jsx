@@ -8,6 +8,7 @@ import PriceChart from './components/PriceChart'
 import TimeframeButtons from './components/TimeframeButtons'
 import ProfitLoss from './components/ProfitLoss'
 import FundButton from './components/FundButton'
+import RouteGuard from '@/app/components/RouteGuard'; 
 
 function ErrorFallback({ error }) {
   return (
@@ -21,26 +22,28 @@ function ErrorFallback({ error }) {
 export default function StockDashboard() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-[#121212] text-white p-4 md:p-8"
-      >
-        <div className="max-w-7xl mx-auto space-y-6">
-          <StockHeader />
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <TimeframeButtons />
-              <PriceChart />
+      <RouteGuard>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="min-h-screen bg-[#121212] text-white p-4 md:p-8"
+        >
+          <div className="max-w-7xl mx-auto space-y-6">
+            <StockHeader />
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="md:col-span-2">
+                <TimeframeButtons />
+                <PriceChart />
+              </div>
+              <div className="md:col-span-1">
+                <StockMetrics />
+              </div>
             </div>
-            <div className="md:col-span-1">
-              <StockMetrics />
-            </div>
+            <ProfitLoss />
+            <FundButton />
           </div>
-          <ProfitLoss />
-          <FundButton />
-        </div>
-      </motion.div>
+        </motion.div>
+      </RouteGuard>
     </ErrorBoundary>
   )
 }

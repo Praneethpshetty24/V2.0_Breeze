@@ -19,7 +19,7 @@ import Navbar from './components2/Navbar';
 import ChartSection from './components2/ChartSection';
 import AnalysisSummary from './components2/AnalysisSummary';
 import LoadingSpinner from './components2/LoadingSpinner';
-
+import RouteGuard from '@/app/components/RouteGuard';
 ChartJS.register(
   CategoryScale,
   LinearScale,

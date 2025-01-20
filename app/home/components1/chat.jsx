@@ -143,13 +143,29 @@ export function Chat() {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#0C0C0C] border-t border-[#2C2C2C]">
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          {replyTo && (
+            <div className="bg-[#2C2C2C] p-2 rounded-lg text-sm text-gray-300">
+              Replying to {replyTo.sender}: {replyTo.message}
+              <button onClick={cancelReply} className="ml-2 text-red-500">Cancel</button>
+            </div>
+          )}
           <input
             type="text"
-            placeholder="Type your message..."
+            placeholder={replyTo ? "Type your reply..." : "Type your message..."}
             className="flex-1 bg-[#1C1C1C] rounded-lg px-4 py-2 text-white"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSendMessage(e)
+              }
+            }}
           />
-          <button className="p-2 bg-purple-500 rounded-lg">
+          <button 
+            className="p-2 bg-purple-500 rounded-lg" 
+            onClick={(e) => handleSendMessage(e)}
+          >
             <Send className="h-5 w-5" />
           </button>
         </div>

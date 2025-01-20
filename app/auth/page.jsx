@@ -9,12 +9,11 @@ import { useRouter } from 'next/navigation';
 const provider = new GoogleAuthProvider();
 
 const Page = () => {
-  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      setUser(user);
       if (user) {
         // Check if user has completed profile setup
         const docRef = doc(db, 'data', user.uid);
@@ -26,6 +25,7 @@ const Page = () => {
           router.push('/profile-setup');
         }
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -33,11 +33,21 @@ const Page = () => {
 
   const signInWithGoogle = async () => {
     try {
+      setLoading(true);
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Error signing in with Google", error);
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-purple-900 to-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-purple-900 to-black">

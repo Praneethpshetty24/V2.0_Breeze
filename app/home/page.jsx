@@ -14,8 +14,17 @@ import { AiChat } from '@/app/home/components1/aichat'
 import { signOut } from 'firebase/auth'
 import { auth } from '@/firebase'
 import Order from './components1/order'
+import RouteGuard from '../components/RouteGuard'
 
-export default function App() {
+export default function HomePage() {
+  return (
+    <RouteGuard>
+      <App />
+    </RouteGuard>
+  )
+}
+
+function App() {
   const [activeTab, setActiveTab] = useState('home')
 
   const tabs = [
