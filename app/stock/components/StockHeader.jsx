@@ -8,7 +8,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import PropTypes from "prop-types";
 import { usePriceGenerator } from "./PriceGenerator";
 import MostLiked from './features/MostLiked';
-import MostBought from './features/MostBought';
+import Marked from './features/Marked';
 
 function LoadingHeader() {
   return (
@@ -93,7 +93,7 @@ function StockContent() {
         </div>
         <div className="flex gap-4">
           <MostLiked />
-          <MostBought />
+          <Marked />
         </div>
       </div>
     </motion.div>
