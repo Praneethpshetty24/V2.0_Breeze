@@ -5,7 +5,6 @@ import { ErrorBoundary } from 'react-error-boundary'
 import StockHeader from './components/StockHeader'
 import StockMetrics from './components/StockMetrics'
 import PriceChart from './components/PriceChart'
-import TimeframeButtons from './components/TimeframeButtons'
 import ProfitLoss from './components/ProfitLoss'
 import FundButton from './components/FundButton'
 import RouteGuard from '@/app/components/RouteGuard'; 
@@ -32,7 +31,7 @@ export default function StockDashboard() {
             <StockHeader />
             <div className="grid md:grid-cols-3 gap-6">
               <div className="md:col-span-2">
-                <TimeframeButtons />
+               
                 <PriceChart />
               </div>
               <div className="md:col-span-1">
