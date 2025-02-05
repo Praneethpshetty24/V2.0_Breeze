@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, LineChart, PieChart, DollarSign, Activity, Shield, Globe, Clock, BarChartIcon as ChartBar } from 'lucide-react';
+import { TrendingUp, LineChart, PieChart, IndianRupee, Activity, Shield, Globe, Clock, BarChartIcon as ChartBar } from 'lucide-react';
 
 export default function BackgroundIcons() {
   const [backgroundIcons, setBackgroundIcons] = useState([]);
@@ -17,7 +17,7 @@ export default function BackgroundIcons() {
       TrendingUp,
       LineChart,
       PieChart,
-      DollarSign,
+      IndianRupee,
       Activity,
       Shield,
       Globe,
