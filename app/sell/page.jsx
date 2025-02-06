@@ -56,7 +56,9 @@ const SellPageContent = () => {
     try {
       setIsLoading(true);
       const userId = auth.currentUser?.uid;
-      if (!userId) {
+      const userEmail = auth.currentUser?.email;
+      
+      if (!userId || !userEmail) {
         toast.error('Please login to sell stocks');
         return;
       }
@@ -93,8 +95,28 @@ const SellPageContent = () => {
         totalAmount: newTotalAmount
       });
 
+      // After successful stock sale, send confirmation email
+      const emailResponse = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userEmail,
+          stockName: stockData.name,
+          quantity,
+          totalAmount: stockData.pricePerShare * quantity,
+        }),
+      });
+
+      const emailData = await emailResponse.json();
+      if (!emailResponse.ok) {
+        console.error('Email sending failed:', emailData);
+        toast.error(`Failed to send confirmation email: ${emailData.error}`);
+      }
+
       toast.success('Stock sold successfully!');
-      router.push('/home'); // Redirect to home after successful sale
+      router.push('/home');
 
     } catch (error) {
       console.error('Error selling stock:', error);
