@@ -84,8 +84,31 @@ const BuyPageContent = () => {
         throw new Error(data.error || 'Payment session creation failed');
       }
 
+      // After successful purchase and before redirecting to payment
+      try {
+        const emailResponse = await fetch('/api/send-buy-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userEmail: user.email,
+            stockName: stockName,
+            quantity: quantity,
+            totalAmount: passedPrice * quantity,
+          }),
+        });
+
+        const emailData = await emailResponse.json();
+        if (!emailResponse.ok) {
+          console.error('Email sending failed:', emailData);
+        }
+      } catch (emailError) {
+        console.error('Failed to send confirmation email:', emailError);
+      }
+
+      // Continue with payment redirect
       if (data.url) {
-        // Add query parameters to success URL
         const successUrl = new URL(data.url);
         successUrl.searchParams.append('stockName', stockName);
         successUrl.searchParams.append('quantity', quantity.toString());
