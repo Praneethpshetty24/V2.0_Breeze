@@ -32,7 +32,10 @@ export async function POST(request) {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
           <h2 style="color: #8B5CF6;">Stock Purchase Confirmation</h2>
           <p>Your stock purchase has been successfully processed.</p>
-          
+          <div style="background-color: #ffdddd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #d92828;">Alert:</h3>
+            <p>You are trying to buy stocks. Please ensure you have sufficient funds in your account.</p>
+          </div>
           <div style="background-color: #f8f8f8; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #6D28D9;">Transaction Details:</h3>
             <p><strong>Stock:</strong> ${stockName}</p>
@@ -47,9 +50,7 @@ export async function POST(request) {
               timeZone: 'Asia/Kolkata',
             })}</p>
           </div>
-          
           <p style="color: #666;">Thank you for investing with Breeze. Your investment journey begins here!</p>
-          
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
             <p>This is an automated message, please do not reply to this email.</p>
           </div>
