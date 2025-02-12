@@ -35,6 +35,11 @@ const Page = () => {
     try {
       setLoading(true);
       await signInWithPopup(auth, provider);
+   
+      setTimeout(() => {
+        setLoading(false); 
+        router.push('/home');
+      }, 2000); 
     } catch (error) {
       console.error("Error signing in with Google", error);
       setLoading(false);
@@ -54,7 +59,7 @@ const Page = () => {
       <BackgroundIcons className="absolute inset-0 z-0" />
       <div className="z-10 bg-white bg-opacity-10 p-8 rounded-lg backdrop-filter backdrop-blur-lg shadow-xl">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-6">Sign In</h1>
+          <h1 className="text-4xl font-bold text-white mb-6">Sign In.</h1>
           <button
             onClick={signInWithGoogle}
             className="bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center"
