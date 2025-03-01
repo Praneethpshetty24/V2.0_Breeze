@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Gem } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -32,6 +33,13 @@ export default function HeroSection() {
           Experience the future of stock investment with our innovative
           funding platform
         </p>
+        <Link href="/home">
+          <Button 
+            className="bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 hover:from-violet-500 hover:via-purple-500 hover:to-pink-500 text-white px-8 py-3 rounded-lg text-lg"
+          >
+            Get Started
+          </Button>
+        </Link>
       </motion.div>
     </section>
   );

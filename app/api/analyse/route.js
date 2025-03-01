@@ -1,7 +1,4 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { NextResponse } from 'next/server';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function POST(req) {
     try {
@@ -72,21 +69,27 @@ Date: ${date}`;
         Here are the purchases:
         ${purchasesSummary}`;
 
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro"  });
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const summary = response.text();
 
-        return NextResponse.json({
+        return new Response(JSON.stringify({
             success: true,
             summary,
             chartData
+        }), {
+            headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error('Analysis error:', error);
-        return NextResponse.json({
+        return new Response(JSON.stringify({
             success: false,
             error: 'Failed to analyze purchases'
-        }, { status: 500 });
+        }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 }
