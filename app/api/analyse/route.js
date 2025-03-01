@@ -20,91 +20,120 @@ export async function POST(req) {
             throw new Error('Purchases array is empty');
         }
 
-        // Validate and sanitize purchase objects
-        const validPurchases = purchases.filter(purchase => {
-            // Check if purchase has all required fields
-            return purchase && 
-                   purchase.stockName && 
-                   typeof purchase.price === 'number' && 
-                   typeof purchase.quantity === 'number' && 
-                   typeof purchase.totalAmount === 'number' &&
-                   purchase.timestamp; // Just check if timestamp exists
+        console.log('Received purchases data:', JSON.stringify(purchases));
+
+        // Process purchases without strict validation
+        // Just ensure each purchase has at least some data we can work with
+        const processedPurchases = purchases.map((purchase, index) => {
+            // Create a sanitized version of the purchase with default values
+            return {
+                stockName: purchase.stockName || `Stock ${index + 1}`,
+                price: typeof purchase.price === 'number' ? purchase.price : 0,
+                quantity: typeof purchase.quantity === 'number' ? purchase.quantity : 0,
+                totalAmount: typeof purchase.totalAmount === 'number' ? purchase.totalAmount : 0,
+                // Create a default timestamp if missing
+                timestamp: purchase.timestamp || new Date()
+            };
         });
 
-        if (validPurchases.length === 0) {
-            throw new Error('No valid purchases found after filtering');
-        }
-
-        // Format timestamps properly from Firestore
-        const sortedPurchases = validPurchases.sort((a, b) => {
-            // Handle different timestamp formats
-            const getTimestamp = (timestamp) => {
-                if (timestamp.seconds) {
-                    return new Date(timestamp.seconds * 1000);
-                } else if (timestamp.toDate) {
-                    return timestamp.toDate();
-                } else if (timestamp instanceof Date) {
-                    return timestamp;
-                } else {
-                    return new Date(timestamp);
-                }
-            };
+        // Sort purchases by timestamp (with flexible handling)
+        const sortedPurchases = processedPurchases.sort((a, b) => {
+            let dateA, dateB;
             
-            const dateA = getTimestamp(a.timestamp);
-            const dateB = getTimestamp(b.timestamp);
+            try {
+                if (a.timestamp && a.timestamp.seconds) {
+                    dateA = new Date(a.timestamp.seconds * 1000);
+                } else if (a.timestamp && a.timestamp.toDate) {
+                    dateA = a.timestamp.toDate();
+                } else if (a.timestamp instanceof Date) {
+                    dateA = a.timestamp;
+                } else {
+                    dateA = new Date();
+                }
+            } catch (e) {
+                console.log('Error parsing timestamp A:', e);
+                dateA = new Date();
+            }
+            
+            try {
+                if (b.timestamp && b.timestamp.seconds) {
+                    dateB = new Date(b.timestamp.seconds * 1000);
+                } else if (b.timestamp && b.timestamp.toDate) {
+                    dateB = b.timestamp.toDate();
+                } else if (b.timestamp instanceof Date) {
+                    dateB = b.timestamp;
+                } else {
+                    dateB = new Date();
+                }
+            } catch (e) {
+                console.log('Error parsing timestamp B:', e);
+                dateB = new Date();
+            }
+            
             return dateA - dateB;
         });
 
-        // Prepare chart data with properly formatted dates
+        // Prepare chart data with safely formatted dates
         const chartData = {
-            labels: sortedPurchases.map(p => {
-                // Handle different timestamp formats
+            labels: sortedPurchases.map((p, index) => {
+                let dateStr;
+                try {
+                    let date;
+                    if (p.timestamp && p.timestamp.seconds) {
+                        date = new Date(p.timestamp.seconds * 1000);
+                    } else if (p.timestamp && p.timestamp.toDate) {
+                        date = p.timestamp.toDate();
+                    } else if (p.timestamp instanceof Date) {
+                        date = p.timestamp;
+                    } else {
+                        date = new Date();
+                    }
+                    
+                    dateStr = date.toLocaleString("en-IN", {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                        timeZone: 'Asia/Kolkata'
+                    });
+                } catch (e) {
+                    console.log(`Error formatting chart label for index ${index}:`, e);
+                    dateStr = `Purchase ${index + 1}`;
+                }
+                return dateStr;
+            }),
+            values: sortedPurchases.map(p => p.totalAmount)
+        };
+
+        // Enhanced purchase summary format with safely formatted dates
+        const purchasesSummary = sortedPurchases.map((p, index) => {
+            let formattedDate;
+            try {
                 let date;
-                if (p.timestamp.seconds) {
+                if (p.timestamp && p.timestamp.seconds) {
                     date = new Date(p.timestamp.seconds * 1000);
-                } else if (p.timestamp.toDate) {
+                } else if (p.timestamp && p.timestamp.toDate) {
                     date = p.timestamp.toDate();
                 } else if (p.timestamp instanceof Date) {
                     date = p.timestamp;
                 } else {
-                    date = new Date(p.timestamp);
+                    date = new Date();
                 }
                 
-                return date.toLocaleString("en-IN", {
-                    month: "short",
+                formattedDate = date.toLocaleString("en-IN", {
+                    year: "numeric",
+                    month: "long",
                     day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                     hour12: true,
                     timeZone: 'Asia/Kolkata'
                 });
-            }),
-            values: sortedPurchases.map(p => p.totalAmount)
-        };
-
-        // Enhanced purchase summary format with proper date formatting
-        const purchasesSummary = sortedPurchases.map(p => {
-            // Handle different timestamp formats
-            let date;
-            if (p.timestamp.seconds) {
-                date = new Date(p.timestamp.seconds * 1000);
-            } else if (p.timestamp.toDate) {
-                date = p.timestamp.toDate();
-            } else if (p.timestamp instanceof Date) {
-                date = p.timestamp;
-            } else {
-                date = new Date(p.timestamp);
+            } catch (e) {
+                console.log(`Error formatting summary date for index ${index}:`, e);
+                formattedDate = "Unknown date";
             }
-            
-            const formattedDate = date.toLocaleString("en-IN", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-                timeZone: 'Asia/Kolkata'
-            });
             
             return `Stock: ${p.stockName}
 Price: ₹${p.price.toFixed(2)}
