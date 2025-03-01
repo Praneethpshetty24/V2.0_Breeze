@@ -1,50 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Fallback API key - will be used if environment variable is not available
-const FALLBACK_API_KEY = 'AIzaSyBZWB44vgirC9_eX4fH8W6upgOMR2Env9E';
-
-// Maximum number of retries for API calls
-const MAX_RETRIES = 3;
-// Delay between retries (in milliseconds)
-const RETRY_DELAY = 1000;
-
-// Helper function to delay execution
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Helper function to get API key with fallback
-const getApiKey = () => {
-    const envApiKey = process.env.GEMINI_API_KEY;
-    if (envApiKey && envApiKey.trim() !== '') {
-        return envApiKey;
-    }
-    console.warn('GEMINI_API_KEY environment variable not found or empty, using fallback API key');
-    return FALLBACK_API_KEY;
-};
-
-// Helper function to make API calls with retry logic
-async function callGeminiWithRetry(prompt, retryCount = 0) {
-    try {
-        const apiKey = getApiKey();
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
-    } catch (error) {
-        console.error(`Gemini API call failed (attempt ${retryCount + 1}/${MAX_RETRIES}):`, error.message);
-        
-        // Check if we should retry
-        if (retryCount < MAX_RETRIES - 1) {
-            console.log(`Retrying in ${RETRY_DELAY}ms...`);
-            await sleep(RETRY_DELAY);
-            return callGeminiWithRetry(prompt, retryCount + 1);
-        }
-        
-        // If we've exhausted all retries, throw the error
-        throw new Error(`Failed to call Gemini API after ${MAX_RETRIES} attempts: ${error.message}`);
-    }
-}
-
 export async function POST(req) {
     try {
         // Check if request body exists
@@ -65,24 +20,57 @@ export async function POST(req) {
             throw new Error('Purchases array is empty');
         }
 
-        // Validate purchase objects have required fields
-        purchases.forEach((purchase, index) => {
-            if (!purchase.timestamp || !purchase.stockName || !purchase.price || !purchase.quantity || !purchase.totalAmount) {
-                throw new Error(`Purchase at index ${index} is missing required fields`);
-            }
+        // Validate and sanitize purchase objects
+        const validPurchases = purchases.filter(purchase => {
+            // Check if purchase has all required fields
+            return purchase && 
+                   purchase.stockName && 
+                   typeof purchase.price === 'number' && 
+                   typeof purchase.quantity === 'number' && 
+                   typeof purchase.totalAmount === 'number' &&
+                   purchase.timestamp; // Just check if timestamp exists
         });
 
+        if (validPurchases.length === 0) {
+            throw new Error('No valid purchases found after filtering');
+        }
+
         // Format timestamps properly from Firestore
-        const sortedPurchases = purchases.sort((a, b) => {
-            const dateA = new Date(a.timestamp.seconds * 1000);
-            const dateB = new Date(b.timestamp.seconds * 1000);
+        const sortedPurchases = validPurchases.sort((a, b) => {
+            // Handle different timestamp formats
+            const getTimestamp = (timestamp) => {
+                if (timestamp.seconds) {
+                    return new Date(timestamp.seconds * 1000);
+                } else if (timestamp.toDate) {
+                    return timestamp.toDate();
+                } else if (timestamp instanceof Date) {
+                    return timestamp;
+                } else {
+                    return new Date(timestamp);
+                }
+            };
+            
+            const dateA = getTimestamp(a.timestamp);
+            const dateB = getTimestamp(b.timestamp);
             return dateA - dateB;
         });
 
         // Prepare chart data with properly formatted dates
         const chartData = {
             labels: sortedPurchases.map(p => {
-                return new Date(p.timestamp.seconds * 1000).toLocaleString("en-IN", {
+                // Handle different timestamp formats
+                let date;
+                if (p.timestamp.seconds) {
+                    date = new Date(p.timestamp.seconds * 1000);
+                } else if (p.timestamp.toDate) {
+                    date = p.timestamp.toDate();
+                } else if (p.timestamp instanceof Date) {
+                    date = p.timestamp;
+                } else {
+                    date = new Date(p.timestamp);
+                }
+                
+                return date.toLocaleString("en-IN", {
                     month: "short",
                     day: "numeric",
                     hour: "2-digit",
@@ -95,8 +83,20 @@ export async function POST(req) {
         };
 
         // Enhanced purchase summary format with proper date formatting
-        const purchasesSummary = purchases.map(p => {
-            const date = new Date(p.timestamp.seconds * 1000).toLocaleString("en-IN", {
+        const purchasesSummary = sortedPurchases.map(p => {
+            // Handle different timestamp formats
+            let date;
+            if (p.timestamp.seconds) {
+                date = new Date(p.timestamp.seconds * 1000);
+            } else if (p.timestamp.toDate) {
+                date = p.timestamp.toDate();
+            } else if (p.timestamp instanceof Date) {
+                date = p.timestamp;
+            } else {
+                date = new Date(p.timestamp);
+            }
+            
+            const formattedDate = date.toLocaleString("en-IN", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -105,11 +105,12 @@ export async function POST(req) {
                 hour12: true,
                 timeZone: 'Asia/Kolkata'
             });
+            
             return `Stock: ${p.stockName}
 Price: ₹${p.price.toFixed(2)}
 Quantity: ${p.quantity}
 Total: ₹${p.totalAmount.toFixed(2)}
-Date: ${date}`;
+Date: ${formattedDate}`;
         }).join('\n\n');
 
         const prompt = `Analyze these stock purchase records and provide a detailed summary in the following format:
@@ -137,10 +138,16 @@ Date: ${date}`;
         Here are the purchases:
         ${purchasesSummary}`;
 
-        // Call Gemini API with retry logic
-        console.log('Calling Gemini API for analysis...');
-        const summary = await callGeminiWithRetry(prompt);
-        console.log('Successfully received analysis from Gemini API');
+        // Validate API key exists
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error('GEMINI_API_KEY is not configured');
+        }
+
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro"  });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const summary = response.text();
 
         return new Response(JSON.stringify({
             success: true,
