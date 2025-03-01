@@ -1,33 +1,76 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 export default function AnalysisSummary({ summary }) {
-  const formatSummary = (text) => {
-    if (!text) return [];
-    return text.split('\n').map((line) => {
-      if (line.startsWith('##')) {
-        return { 
-          type: 'section', 
-          content: line.replace('##', '').trim() 
-        };
+  const [formattedSummary, setFormattedSummary] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    try {
+      if (!summary) {
+        setFormattedSummary([]);
+        return;
       }
-      if (line.startsWith('- **')) {
+      
+      const formatted = summary.split('\n').map((line) => {
+        if (line.startsWith('##')) {
+          return { 
+            type: 'section', 
+            content: line.replace('##', '').trim() 
+          };
+        }
+        if (line.startsWith('- **')) {
+          return { 
+            type: 'subsection', 
+            content: line.replace('- **', '').replace('**', '').trim() 
+          };
+        }
+        if (line.startsWith('- ')) {
+          return { 
+            type: 'item', 
+            content: line.replace('- ', '').trim() 
+          };
+        }
         return { 
-          type: 'subsection', 
-          content: line.replace('- **', '').replace('**', '').trim() 
+          type: 'text', 
+          content: line 
         };
-      }
-      if (line.startsWith('- ')) {
-        return { 
-          type: 'item', 
-          content: line.replace('- ', '').trim() 
-        };
-      }
-      return { 
-        type: 'text', 
-        content: line 
-      };
-    });
-  };
+      });
+      
+      setFormattedSummary(formatted);
+      setError(null);
+    } catch (err) {
+      console.error('Error formatting summary:', err);
+      setError('Failed to format summary data');
+      setFormattedSummary([]);
+    }
+  }, [summary]);
+
+  if (error) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-800 p-6 shadow-xl"
+      >
+        <h2 className="text-2xl font-bold text-white mb-4">Analysis Summary</h2>
+        <p className="text-red-400">Error: {error}</p>
+      </motion.div>
+    );
+  }
+
+  if (!summary) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="bg-gray-900/50 backdrop-blur-md rounded-xl border border-gray-800 p-6 shadow-xl"
+      >
+        <h2 className="text-2xl font-bold text-white mb-4">Analysis Summary</h2>
+        <p className="text-gray-400">No analysis data available.</p>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -39,7 +82,7 @@ export default function AnalysisSummary({ summary }) {
         Analysis Summary
       </h2>
       <div className="space-y-6">
-        {formatSummary(summary).map((item, index) => {
+        {formattedSummary.map((item, index) => {
           switch (item.type) {
             case 'section':
               return (
@@ -67,6 +110,7 @@ export default function AnalysisSummary({ summary }) {
                 </div>
               );
             default:
+              if (item.content.trim() === '') return null;
               return (
                 <p key={index} className="text-gray-400">
                   {item.content}
