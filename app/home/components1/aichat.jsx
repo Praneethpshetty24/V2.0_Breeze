@@ -5,7 +5,7 @@ import { Send ,Wind } from 'lucide-react'
 
 export function AiChat() {
   const [messages, setMessages] = useState([
-    { role: 'bot', content: 'Hello! I am BreezeBot🤖' }, { role: 'bot', content: "Ask me anything about stock market terms like 'Bull Market📈', 'Bear Market🐻', or 'Dividends💰'!" }
+    { role: 'bot', content: 'Hello! I am BreezeBot🤖' }, { role: 'bot', content: "Ask me anything about stock market terms like 'Bull Market📈.', 'Bear Market🐻', or 'Dividends💰'!" }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
