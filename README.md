@@ -25,4 +25,4 @@ Breeze is a powerful and user-friendly app designed to simplify share funding an
 
 ---
 
-Empowering investors through seamless share funding!
+💡 *Invest smart, grow fast!* 🚀
