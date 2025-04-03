@@ -22,3 +22,7 @@ Breeze is a powerful and user-friendly app designed to simplify share funding an
 - **Payments:** Stripe
 - **Charts & Analysis:** Chart.js
 - **Notifications:** Nodemailer
+
+---
+
+Empowering investors through seamless share funding!
