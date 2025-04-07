@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { FaChartLine, FaHeart, FaShoppingCart, FaStar } from "react-icons/fa";
 import SpotlightCard from "@/components/ui/SpotlightCard";
-import Mostlikeddb from "./features1/Mostlikeddb";
-import Mostboughtdb from "./features1/Mostboughtdb";
 
+const Mostlikeddb = lazy(() => import("./features1/Mostlikeddb"));
+const Mostboughtdb = lazy(() => import("./features1/Mostboughtdb"));
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -48,15 +48,39 @@ const renderStaticStockCards = (type) => {
 function Home() {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lastFetchTime, setLastFetchTime] = useState(0);
+  const CACHE_DURATION = 60000; // 1 minute cache
 
   useEffect(() => {
     const fetchStocks = async () => {
       try {
+        // Check cache in localStorage
+        const cachedData = localStorage.getItem('stocksCache');
+        const cachedTime = localStorage.getItem('stocksCacheTime');
+        const now = Date.now();
+
+        // Use cache if valid
+        if (cachedData && cachedTime && (now - Number(cachedTime)) < CACHE_DURATION) {
+          setStocks(JSON.parse(cachedData));
+          setLoading(false);
+          return;
+        }
+
         const response = await fetch("/api/getStocks");
         const { data } = await response.json();
+        
+        // Update cache
+        localStorage.setItem('stocksCache', JSON.stringify(data));
+        localStorage.setItem('stocksCacheTime', now.toString());
+        
         setStocks(data || []);
       } catch (error) {
         console.error("Error fetching stocks:", error);
+        // Fallback to cached data on error if available
+        const cachedData = localStorage.getItem('stocksCache');
+        if (cachedData) {
+          setStocks(JSON.parse(cachedData));
+        }
       } finally {
         setLoading(false);
       }
@@ -69,13 +93,13 @@ function Home() {
     return (
       <div className="min-h-screen bg-[#121212] text-white p-8">
         <div className="min-h-screen bg-[#121212] text-white p-8 flex items-center justify-center">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-      >
-        <FaChartLine className="text-purple-500 text-4xl" />
-      </motion.div>
-    </div>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <FaChartLine className="text-purple-500 text-4xl" />
+          </motion.div>
+        </div>
       </div>
     );
   }
@@ -83,11 +107,32 @@ function Home() {
   return (
     <div className="min-h-screen bg-[#121212] text-white p-8">
       {/* Most Liked Section */}
-      <Mostlikeddb />
-      
+      <Suspense fallback={
+        <div className="flex items-center justify-center p-8">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <FaChartLine className="text-purple-500 text-4xl" />
+          </motion.div>
+        </div>
+      }>
+        <Mostlikeddb />
+      </Suspense>
 
       {/* Most Bought Section */}
-      <Mostboughtdb />
+      <Suspense fallback={
+        <div className="flex items-center justify-center p-8">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          >
+            <FaChartLine className="text-purple-500 text-4xl" />
+          </motion.div>
+        </div>
+      }>
+        <Mostboughtdb />
+      </Suspense>
 
       {/* Start Funding Here Section */}
       <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mt-16">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { db, auth } from '@/firebase'
 import { collection, getDocs, query, orderBy, where } from "firebase/firestore"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,8 +8,13 @@ import { Package2 } from 'lucide-react'
 
 export default function OrderPage() {
   const [orders, setOrders] = useState([])
+  const [visibleOrders, setVisibleOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [totalSpent, setTotalSpent] = useState(0)
+  const ITEMS_PER_PAGE = 10
+
+  const observer = useRef()
+  const lastOrderRef = useRef()
 
   useEffect(() => {
     async function getOrders() {
@@ -42,6 +47,37 @@ export default function OrderPage() {
 
     getOrders()
   }, [])
+
+  useEffect(() => {
+    setVisibleOrders(orders.slice(0, ITEMS_PER_PAGE))
+  }, [orders])
+
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '20px',
+      threshold: 0.1,
+    }
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && visibleOrders.length < orders.length) {
+        setVisibleOrders(prev => [
+          ...prev,
+          ...orders.slice(prev.length, prev.length + ITEMS_PER_PAGE)
+        ])
+      }
+    }, options)
+
+    if (lastOrderRef.current) {
+      observer.current.observe(lastOrderRef.current)
+    }
+
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect()
+      }
+    }
+  }, [visibleOrders, orders])
 
   if (loading) {
     return (
@@ -76,8 +112,12 @@ export default function OrderPage() {
       
       <div className="flex flex-col h-screen rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 overflow-y-auto">
         <div className="space-y-4">
-          {orders.map((order) => (
-            <Card key={order.id} className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900/80 transition-colors">
+          {visibleOrders.map((order, index) => (
+            <Card
+              key={order.id}
+              ref={index === visibleOrders.length - 1 ? lastOrderRef : null}
+              className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900/80 transition-colors"
+            >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
@@ -113,6 +153,12 @@ export default function OrderPage() {
               </CardContent>
             </Card>
           ))}
+
+          {visibleOrders.length < orders.length && (
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
+            </div>
+          )}
 
           {orders.length === 0 && (
             <div className="text-center py-8 text-zinc-400">

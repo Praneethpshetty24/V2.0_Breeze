@@ -14,10 +14,19 @@ export function Portfolio() {
   const pathname = usePathname()
   const [purchasedStocks, setPurchasedStocks] = useState([])
   const [totalAssets, setTotalAssets] = useState(0)
+
+  const [lastFetchTime, setLastFetchTime] = useState(0)
   const targetAmount = 30000 
+  const CACHE_DURATION = 30000 // 30 seconds cache
   
   useEffect(() => {
     const fetchPurchases = async () => {
+      // Check if cache is still valid
+      const now = Date.now()
+      if (now - lastFetchTime < CACHE_DURATION && purchasedStocks.length > 0) {
+        return // Use cached data
+      }
+
       try {
         const userId = auth.currentUser?.uid
         if (!userId) return
@@ -31,10 +40,10 @@ export function Portfolio() {
           value: doc.data().totalAmount,
           quantity: doc.data().quantity,
           trend: 'up',
-        })).filter(stock => stock.quantity > 0) // Only show stocks with quantity > 0
+        })).filter(stock => stock.quantity > 0)
         
         setPurchasedStocks(stocks)
-        // Calculate total assets
+        setLastFetchTime(now)
         const total = stocks.reduce((sum, stock) => sum + stock.value, 0)
         setTotalAssets(total)
       } catch (error) {
@@ -43,7 +52,7 @@ export function Portfolio() {
     }
 
     fetchPurchases()
-  }, [pathname]) // Re-fetch when pathname changes
+  }, [pathname, lastFetchTime, purchasedStocks.length]) // Added cache-related dependencies
 
   // Calculate progress percentage
   const progressPercentage = Math.min((totalAssets / targetAmount) * 100, 100)
