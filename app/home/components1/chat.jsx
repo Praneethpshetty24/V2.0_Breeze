@@ -2,12 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Send, Wind, X, Reply, XCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Send } from 'lucide-react'
+import { SheetTitle } from '@/components/ui/sheet'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { SheetTitle, SheetClose } from '@/components/ui/sheet'
 import { db, auth } from '@/firebase'
 import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -16,7 +13,6 @@ export function Chat() {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [user] = useAuthState(auth)
-  const [replyTo, setReplyTo] = useState(null)
 
   useEffect(() => {
     const q = query(collection(db, 'chats'), orderBy('timestamp', 'asc'))
@@ -47,42 +43,12 @@ export function Chat() {
         })
       }
 
-      // Add reply data if replying to a message
-      if (replyTo) {
-        messageData.replyTo = {
-          id: replyTo.id,
-          message: replyTo.message,
-          sender: replyTo.sender
-        }
-      }
-
       await addDoc(collection(db, 'chats'), messageData)
-      
       setNewMessage('')
-      setReplyTo(null)
     } catch (error) {
       console.error('Error sending message:', error)
     }
   }
-
-  const handleReply = (msg) => {
-    setReplyTo(msg)
-  }
-
-  const cancelReply = () => {
-    setReplyTo(null)
-  }
-
-  const ReplyBadge = ({ replyData }) => (
-    <div className="bg-[#2C2C2C] rounded-lg p-2 mb-2 text-sm">
-      <div className="text-gray-400 text-xs">
-        Reply to {replyData.sender}
-      </div>
-      <div className="text-gray-300 truncate">
-        {replyData.message}
-      </div>
-    </div>
-  )
 
   return (
     <div className="flex flex-col h-full">
@@ -124,18 +90,8 @@ export function Chat() {
                     ? 'bg-purple-500 text-white rounded-tr-none'
                     : 'bg-[#1C1C1C] text-gray-100 rounded-tl-none'
                 }`}>
-                  {msg.replyTo && <ReplyBadge replyData={msg.replyTo} />}
                   {msg.message}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-purple-500 mt-1"
-                  onClick={() => handleReply(msg)}
-                >
-                  <Reply className="h-4 w-4 mr-1" />
-                  Reply
-                </Button>
               </div>
             </motion.div>
           ))}
@@ -144,15 +100,9 @@ export function Chat() {
 
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-[#0C0C0C] border-t border-[#2C2C2C]">
         <div className="flex items-center gap-2">
-          {replyTo && (
-            <div className="bg-[#2C2C2C] p-2 rounded-lg text-sm text-gray-300">
-              Replying to {replyTo.sender}: {replyTo.message}
-              <button onClick={cancelReply} className="ml-2 text-red-500">Cancel</button>
-            </div>
-          )}
           <input
             type="text"
-            placeholder={replyTo ? "Type your reply..." : "Type your message..."}
+            placeholder="Type your message..."
             className="flex-1 bg-[#1C1C1C] rounded-lg px-4 py-2 text-white"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
