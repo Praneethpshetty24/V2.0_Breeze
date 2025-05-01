@@ -50,7 +50,7 @@ export async function POST(request) {
               timeZone: 'Asia/Kolkata',
             })}</p>
           </div>
-          <p style="color: #666;">Thank you for investing with Breeze. Your investment journey begins here!</p>
+          <p style="color: #666;">Thank you for investing with Breeze. Your investment journey begins here!.</p>
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
             <p>This is an automated message, please do not reply to this email.</p>
           </div>
