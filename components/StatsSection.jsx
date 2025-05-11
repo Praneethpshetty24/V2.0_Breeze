@@ -18,13 +18,13 @@ const stats = [
     value: "High Security",
     label: "Security",
     icon: Shield,
-    description: "Top-notch security measures"
+    description: "Top-notch security measures with global standards"
   },
   {
     value: "Community",
     label: " Community",
     icon: Users,
-    description: "Engage with community"
+    description: "Engage with community members and share insights"
   },
 
 ];
