@@ -9,10 +9,10 @@ const stats = [
     description: "Interactive chat powered by AI"
   },
   {
-    value: "AI Analyst",
+    value: "Analyst",
     label: "Analysis",
     icon: Shield,
-    description: "AI-driven market analysis"
+    description: "Market analysis with visualization"
   },
   {
     value: "High Security",
