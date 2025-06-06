@@ -16,7 +16,7 @@ Breeze is a powerful and user-friendly app designed to simplify share funding an
 
 ## 🛠️ Tech Stack
 
-- **Backend:** NestJS, Supabase, Firebase, MongoDB
+- **Backend:** Node.js, Supabase, Firebase, 
 - **Frontend:** React, Next.js
 - **AI Integration:** Gemini API
 - **Payments:** Stripe
