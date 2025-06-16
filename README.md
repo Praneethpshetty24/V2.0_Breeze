@@ -3,6 +3,7 @@
 Breeze is a powerful and user-friendly app designed to simplify share funding and investment tracking. Whether you're a seasoned investor or just starting, Breeze helps you stay informed, manage investments, and connect with fellow investors.
 
 ## 🚀 Features
+https://www.praneethp.xyz/blog/projects/project1 - Detailed blog
 
 - **📈 Trending Insights** – Displays the most bought and most liked stocks on the home screen.
 - **🏦 Funding Organization Listings** – View and invest in listed organization stocks.
